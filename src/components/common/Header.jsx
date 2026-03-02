@@ -11,7 +11,7 @@ export function Header({ currentPage, setCurrentPage, navigateToHomeSection, nav
                 Immer Executive
             </div>
 
-            <div className="hidden md:flex items-center gap-10 text-[11px] uppercase tracking-[0.2em] font-semibold text-gray-500">
+            <div className="hidden md:flex items-center gap-10 text-[11px] uppercase tracking-[0.2em] font-semibold text-gray-700">
                 <button onClick={() => { setCurrentPage('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className={currentPage === 'home' ? 'text-[#01001e]' : 'hover:text-[#01001e]'}>Accueil</button>
 
                 <div className="relative group h-20 flex items-center">
@@ -26,7 +26,7 @@ export function Header({ currentPage, setCurrentPage, navigateToHomeSection, nav
                             <button
                                 key={s.id}
                                 onClick={() => navigateToService(s.id)}
-                                className="w-full text-left px-6 py-3 hover:bg-gray-50 text-[10px] uppercase tracking-widest text-gray-400 hover:text-[#01001e]"
+                                className="w-full text-left px-6 py-3 hover:bg-gray-50 text-[10px] uppercase tracking-widest text-gray-600 hover:text-[#01001e]"
                             >
                                 {s.title}
                             </button>

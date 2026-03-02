@@ -13,7 +13,7 @@ export function HomeView({ services, partners, onNavigatePrestation }) {
                     Renforcer les organisations <br /> dans la durée.
                 </h1>
                 <div className="max-w-3xl">
-                    <p className="text-xl text-gray-500 leading-relaxed font-light">
+                    <p className="text-xl text-[#01001e]/80 leading-relaxed font-light">
                         Immer Executive est depuis près de dix ans un cabinet de conseil et de chasse de tête en France et à l’international.
                         Nous intervenons dans le cadre d’une relation bilatérale aux côtés du dirigeant.
                     </p>
@@ -23,7 +23,7 @@ export function HomeView({ services, partners, onNavigatePrestation }) {
             {/* Valeurs */}
             <section id="valeurs-section" className="max-w-7xl mx-auto px-8 py-32 scroll-mt-20">
                 <div className="flex items-center gap-6 mb-20">
-                    <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-300 italic whitespace-nowrap">Posture & Valeurs</span>
+                    <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 italic whitespace-nowrap">Posture & Valeurs</span>
                     <div className="h-[1px] flex-1 bg-gray-100"></div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
@@ -68,7 +68,7 @@ export function HomeView({ services, partners, onNavigatePrestation }) {
             <section id="equipe-section" className="max-w-7xl mx-auto px-8 py-32 scroll-mt-20">
                 <div className="max-w-3xl mb-16">
                     <h2 className="text-5xl font-playfair italic mb-8 text-[#01001e]">Un collectif de partners engagés</h2>
-                    <p className="text-gray-500 leading-relaxed font-light">
+                    <p className="text-[#01001e]/80 leading-relaxed font-light">
                         Nos expertises sont complémentaires. Nous sommes unis par la manière de travailler ensemble : parole franche, confiance, responsabilité.
                     </p>
                 </div>
@@ -84,7 +84,7 @@ export function HomeView({ services, partners, onNavigatePrestation }) {
                         </div>
                     ))}
                     <div className="flex items-center justify-center border border-dashed border-gray-200 aspect-[3/4] rounded-sm group hover:border-[#01001e] transition-colors cursor-pointer">
-                        <button className="text-[10px] uppercase tracking-widest text-gray-300 group-hover:text-[#01001e] font-bold transition-colors underline underline-offset-8">Voir toute l'équipe</button>
+                        <button className="text-[10px] uppercase tracking-widest text-gray-500 group-hover:text-[#01001e] font-bold transition-colors underline underline-offset-8">Voir toute l'équipe</button>
                     </div>
                 </div>
             </section>

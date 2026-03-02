@@ -8,7 +8,7 @@ export function ContactSection() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-24">
                 <div>
                     <h2 className="text-5xl font-playfair italic mb-10 leading-tight">Commençons par échanger en toute confidentialité.</h2>
-                    <p className="text-gray-500 mb-16 font-light leading-relaxed italic">Les situations que nous accompagnons sont sensibles. Les échanges sont strictement confidentiels.</p>
+                    <p className="text-[#01001e]/80 mb-16 font-light leading-relaxed italic">Les situations que nous accompagnons sont sensibles. Les échanges sont strictement confidentiels.</p>
                     <div className="space-y-10">
                         <ContactItem icon={<Mail className="w-4 h-4" />} label="Email direct" value="contact@immer-executive.com" />
                         <ContactItem icon={<MapPin className="w-4 h-4" />} label="Siège Paris" value="66 avenue des Champs-Élysées, 75008, Paris" />
@@ -18,12 +18,12 @@ export function ContactSection() {
                     <div className="space-y-10">
                         <div className="grid md:grid-cols-2 gap-8">
                             <div className="space-y-2">
-                                <label className="text-[9px] uppercase font-bold text-gray-400 tracking-widest">Nom complet</label>
-                                <input className="w-full border-b border-gray-100 py-3 text-sm focus:border-[#01001e] outline-none transition-colors bg-transparent placeholder:text-gray-200" placeholder="Votre nom" />
+                                <label className="text-[9px] uppercase font-bold text-gray-600 tracking-widest">Nom complet</label>
+                                <input className="w-full border-b border-gray-100 py-3 text-sm focus:border-[#01001e] outline-none transition-colors bg-transparent placeholder:text-gray-400" placeholder="Votre nom" />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-[9px] uppercase font-bold text-gray-400 tracking-widest">Email</label>
-                                <input className="w-full border-b border-gray-100 py-3 text-sm focus:border-[#01001e] outline-none transition-colors bg-transparent placeholder:text-gray-200" placeholder="Votre email" />
+                                <label className="text-[9px] uppercase font-bold text-gray-600 tracking-widest">Email</label>
+                                <input className="w-full border-b border-gray-100 py-3 text-sm focus:border-[#01001e] outline-none transition-colors bg-transparent placeholder:text-gray-400" placeholder="Votre email" />
                             </div>
                         </div>
                         <div className="space-y-2">
