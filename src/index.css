@@ -1,0 +1,39 @@
+@import url('https://fonts.googleapis.com/css2?family=Hind:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bleu-fonce: #01001e;
+  --bleu-clair: #0000a3;
+  --soft-gray: #f8f8f8;
+  --line-gray: #e5e5e5;
+  --white: #ffffff;
+}
+
+body {
+  margin: 0;
+  font-family: 'Hind', sans-serif;
+  background-color: #fcfcfc;
+  color: var(--bleu-fonce);
+  overflow-x: hidden;
+}
+
+.font-playfair {
+  font-family: 'Playfair Display', serif;
+}
+
+/* Custom scrollbar behavior for detail view */
+.scroll-mt-32 {
+  scroll-margin-top: 8rem;
+}
+
+.scroll-mt-20 {
+  scroll-margin-top: 5rem;
+}
+
+.selection\:bg-\[#01001e\] ::selection {
+  background-color: #01001e;
+  color: white;
+}
