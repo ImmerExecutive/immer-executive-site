@@ -7,7 +7,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        'playfair': ['Playfair Display', 'serif'],
+        'playfair': ['Ponzu', 'serif'],
         'hind': ['Hind', 'sans-serif'],
       },
       colors: {

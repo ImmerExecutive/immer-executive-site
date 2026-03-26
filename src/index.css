@@ -1,4 +1,47 @@
-@import url('https://fonts.googleapis.com/css2?family=Hind:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Hind:wght@300;400;500;600;700&display=swap');
+
+@font-face {
+  font-family: 'Ponzu';
+  src: url('/fonts/Mint Type - Ponzu-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ponzu';
+  src: url('/fonts/Mint Type - Ponzu-Italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ponzu';
+  src: url('/fonts/Mint Type - Ponzu-SemiBold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ponzu';
+  src: url('/fonts/Mint Type - Ponzu-SemiBoldItalic.otf') format('opentype');
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ponzu';
+  src: url('/fonts/Mint Type - Ponzu-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ponzu';
+  src: url('/fonts/Mint Type - Ponzu-BoldItalic.otf') format('opentype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
 
 @tailwind base;
 @tailwind components;
@@ -21,7 +64,7 @@ body {
 }
 
 .font-playfair {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Ponzu', serif;
 }
 
 /* Custom scrollbar behavior for detail view */

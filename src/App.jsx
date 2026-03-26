@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useData } from './hooks/useData';
 import { Header } from './components/common/Header';
 import { Footer } from './components/common/Footer';
@@ -12,8 +12,39 @@ export default function App() {
 
   const { services, fullServicesContent, partners, loading } = useData();
 
+  // Initialise l'état history au chargement
+  useEffect(() => {
+    history.replaceState({ page: 'home' }, '');
+  }, []);
+
+  // Écoute le bouton retour/suivant du navigateur
+  useEffect(() => {
+    const handlePop = (e) => {
+      const state = e.state;
+      if (!state || state.page === 'home') {
+        setCurrentPage('home');
+        setActiveServiceId(null);
+        setTargetPrestation(null);
+        if (state?.sectionId) {
+          setTimeout(() => {
+            const el = document.getElementById(state.sectionId);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 50);
+        }
+      } else if (state.page === 'service-detail') {
+        setActiveServiceId(state.serviceId);
+        setTargetPrestation(state.prestationId || null);
+        setCurrentPage('service-detail');
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      }
+    };
+    window.addEventListener('popstate', handlePop);
+    return () => window.removeEventListener('popstate', handlePop);
+  }, []);
+
   const navigateToHomeSection = (id) => {
     setCurrentPage('home');
+    history.pushState({ page: 'home', sectionId: id }, '');
     setTimeout(() => {
       const el = document.getElementById(id);
       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -24,13 +55,14 @@ export default function App() {
     setActiveServiceId(serviceId);
     setTargetPrestation(prestationId);
     setCurrentPage('service-detail');
+    history.pushState({ page: 'service-detail', serviceId, prestationId }, '');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#fcfcfc]">
-        <div className="animate-pulse text-[#01001e] font-playfair italic text-2xl">
+        <div className="animate-pulse text-[#01001e] font-playfair text-2xl">
           Immer Executive...
         </div>
       </div>
@@ -59,7 +91,7 @@ export default function App() {
             serviceId={activeServiceId}
             targetPrestation={targetPrestation}
             fullServicesContent={fullServicesContent}
-            onBack={() => setCurrentPage('home')}
+            onBack={() => history.back()}
           />
         )}
       </main>
