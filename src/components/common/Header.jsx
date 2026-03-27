@@ -21,7 +21,7 @@ export function Header({ currentPage, setCurrentPage, navigateToHomeSection, nav
             </div>
 
             {/* Desktop nav */}
-            <div className="hidden md:flex items-center gap-10 text-[11px] uppercase tracking-[0.2em] font-semibold text-gray-700">
+            <div className="hidden md:flex items-center gap-10 text-[13px] uppercase tracking-[0.2em] font-semibold text-gray-700">
                 <button
                     onClick={() => { setCurrentPage('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                     className={currentPage === 'home' ? 'text-[#01001e]' : 'hover:text-[#01001e]'}

@@ -16,17 +16,19 @@ export function ContactSection() {
                         <ContactItem icon={<MapPin className="w-4 h-4" />} label="Siège Paris" value="66 avenue des Champs-Élysées, 75008, Paris" />
                     </div>
                     <div className="space-y-4 pt-8 border-t border-gray-100">
-                        <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-gray-400 mb-4">Vous êtes un candidat ou manager de transition ?</p>
+                        <p className="text-sm uppercase tracking-[0.3em] font-bold text-gray-400 mb-4">Vous êtes un candidat ou manager de transition ?</p>
                         <a
                             href="mailto:contact@immer-executive.com?subject=Candidature — Base de données Immer Executive"
-                            className="flex items-center gap-3 text-[10px] uppercase tracking-widest font-bold text-gray-600 hover:text-[#0000a3] transition-colors group"
+                            className="flex items-center gap-3 text-xs uppercase tracking-widest font-bold text-gray-600 hover:text-[#0000a3] transition-colors group"
                         >
                             <Users className="w-4 h-4" />
                             Candidats — Enregistrez-vous dans notre base
                         </a>
                         <a
-                            href="mailto:contact@immer-executive.com?subject=Manager de transition — Base de données Immer Executive"
-                            className="flex items-center gap-3 text-[10px] uppercase tracking-widest font-bold text-gray-600 hover:text-[#0000a3] transition-colors group"
+                            href="https://airtable.com/appAQmwJcnBdjw1MG/shrdSG2artqa0Kqqz"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-3 text-xs uppercase tracking-widest font-bold text-gray-600 hover:text-[#0000a3] transition-colors group"
                         >
                             <Briefcase className="w-4 h-4" />
                             Managers de transition — Enregistrez-vous dans notre base
@@ -37,19 +39,19 @@ export function ContactSection() {
                     <div className="space-y-10">
                         <div className="grid md:grid-cols-2 gap-8">
                             <div className="space-y-2">
-                                <label className="text-[10px] uppercase font-bold text-gray-600 tracking-widest">Nom complet</label>
+                                <label className="text-xs uppercase font-bold text-gray-600 tracking-widest">Nom complet</label>
                                 <input className="w-full border-b border-gray-100 py-3 text-sm focus:border-[#01001e] outline-none transition-colors bg-transparent placeholder:text-gray-400" placeholder="Votre nom" />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-[10px] uppercase font-bold text-gray-600 tracking-widest">Email</label>
+                                <label className="text-xs uppercase font-bold text-gray-600 tracking-widest">Email</label>
                                 <input className="w-full border-b border-gray-100 py-3 text-sm focus:border-[#01001e] outline-none transition-colors bg-transparent placeholder:text-gray-400" placeholder="Votre email" />
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <label className="text-[10px] uppercase font-bold text-gray-600 tracking-widest">Votre situation</label>
+                            <label className="text-xs uppercase font-bold text-gray-600 tracking-widest">Votre situation</label>
                             <textarea className="w-full border-b border-gray-100 py-3 text-sm focus:border-[#01001e] outline-none transition-colors bg-transparent min-h-[120px] placeholder:text-gray-300 resize-none" placeholder="Décrivez brièvement le contexte..." />
                         </div>
-                        <button className="w-full py-5 bg-[#01001e] text-white text-[10px] uppercase tracking-[0.3em] font-bold hover:bg-[#0000a3] transition-colors shadow-lg">
+                        <button className="w-full py-5 bg-[#01001e] text-white text-xs uppercase tracking-[0.3em] font-bold hover:bg-[#0000a3] transition-colors shadow-lg">
                             Envoyer ma demande
                         </button>
                     </div>

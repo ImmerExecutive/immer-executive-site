@@ -14,6 +14,10 @@ export function HomeView({ services, partners, onNavigatePrestation }) {
         <div className="animate-in fade-in duration-1000">
             {/* Hero */}
             <section className="max-w-7xl mx-auto px-8 pt-32 pb-24 border-b border-gray-100">
+                <div className="flex items-center gap-3 mb-10">
+                    <img src="/favicon.svg" alt="" className="h-6 w-6 shrink-0 opacity-60" />
+                    <span className="text-[11px] font-bold uppercase tracking-[0.35em] text-[#01001e]/40">Immer Executive</span>
+                </div>
                 <h1 className="text-6xl md:text-8xl font-playfair mb-12 leading-[1.1] tracking-tight text-[#01001e]">
                     Renforcer les organisations <br /> dans la durée.
                 </h1>
@@ -29,7 +33,7 @@ export function HomeView({ services, partners, onNavigatePrestation }) {
             <div className="bg-gray-50 border-b border-gray-100">
             <section id="valeurs-section" className="max-w-7xl mx-auto px-8 py-32 scroll-mt-20">
                 <div className="flex items-center gap-6 mb-20">
-                    <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-500 whitespace-nowrap">Posture & Valeurs</span>
+                    <span className="text-xs font-bold uppercase tracking-[0.4em] text-gray-500 whitespace-nowrap">Posture & Valeurs</span>
                     <div className="h-[1px] flex-1 bg-gray-100"></div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
@@ -94,7 +98,7 @@ export function HomeView({ services, partners, onNavigatePrestation }) {
                         Nos expertises sont complémentaires. Nous sommes unis par la manière de travailler ensemble : parole franche, confiance, responsabilité.
                     </p>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-6 gap-y-10">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-6 gap-y-10">
                     {partners.map((p, i) => (
                         <div key={i} className="group">
                             <div className="aspect-square bg-gray-50 flex items-center justify-center border border-gray-100 mb-4 rounded-sm overflow-hidden relative">
@@ -109,8 +113,8 @@ export function HomeView({ services, partners, onNavigatePrestation }) {
                                 )}
                                 <div className="absolute inset-0 bg-[#01001e] opacity-0 group-hover:opacity-10 transition-opacity" />
                             </div>
-                            <h4 className="text-[10px] font-bold uppercase tracking-[0.15em] mb-1 text-[#01001e] leading-tight">{p.name}</h4>
-                            <p className="text-[10px] text-gray-500 uppercase tracking-wider leading-tight mb-2">{p.role}</p>
+                            <h4 className="text-xs font-bold uppercase tracking-[0.15em] mb-1 text-[#01001e] leading-tight">{p.name}</h4>
+                            <p className="text-xs text-gray-500 uppercase tracking-wider leading-tight mb-2">{p.role}</p>
                             {p.linkedin && (
                                 <a
                                     href={p.linkedin}

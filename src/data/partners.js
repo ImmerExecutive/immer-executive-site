@@ -18,15 +18,6 @@ export const PARTNERS_DATA = [
         category: "Chasse de tête & Transition"
     },
     {
-        name: "Sandrine Compagnie",
-        role: "Chasse de tête · Management de Transition",
-        initial: "SC",
-        photo: "/team/sandrine-compagnie.jpg",
-        email: "sandrine.compagnie@immer-executive.com",
-        linkedin: "https://www.linkedin.com/in/sandrinecompagnie/",
-        category: "Chasse de tête & Transition"
-    },
-    {
         name: "Emmanuelle de Caslou",
         role: "Chasse de tête",
         initial: "EC",
