@@ -25,8 +25,7 @@ export function ServiceDetailView({ serviceId, targetPrestation, fullServicesCon
             </button>
 
             <div className="max-w-4xl mb-32 border-l-4 border-[#01001e] pl-10">
-                <span className="text-[10px] uppercase tracking-[0.5em] text-[#0000a3] font-bold block mb-6">{serviceData.subtitle}</span>
-                <h1 className="text-6xl md:text-8xl font-playfair mb-10 text-[#01001e] leading-none">{serviceData.title}</h1>
+<h1 className="text-6xl md:text-8xl font-playfair mb-10 text-[#01001e] leading-none">{serviceData.title}</h1>
                 <p className="text-2xl text-[#01001e]/80 font-light leading-relaxed">
                     {serviceData.intro}
                 </p>
