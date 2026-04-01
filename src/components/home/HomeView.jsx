@@ -13,15 +13,16 @@ export function HomeView({ services, partners, onNavigatePrestation }) {
     return (
         <div className="animate-in fade-in duration-1000">
             {/* Hero */}
-            <section className="relative max-w-7xl mx-auto px-8 pt-32 pb-24 border-b border-gray-100 overflow-hidden">
-                {/* Filigrane */}
-                <img
-                    src="/forme-immer.svg"
-                    aria-hidden="true"
-                    className="absolute -right-32 top-1/2 -translate-y-1/2 w-[520px] opacity-[0.06] pointer-events-none select-none"
-                    style={{ filter: 'blur(1px)' }}
-                />
-                <h1 className="relative text-6xl md:text-8xl font-playfair mb-12 leading-[1.1] tracking-tight text-[#01001e]">
+            <section className="relative max-w-7xl mx-auto px-8 pt-32 pb-24 border-b border-gray-100">
+                {/* Filigrane — clippage indépendant pour ne pas affecter le texte */}
+                <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+                    <img
+                        src="/forme-immer.svg"
+                        className="absolute -right-32 top-1/2 -translate-y-1/2 w-[520px] opacity-[0.06] select-none"
+                        style={{ filter: 'blur(1px)' }}
+                    />
+                </div>
+                <h1 className="relative text-5xl sm:text-6xl md:text-8xl font-playfair mb-12 leading-[1.1] tracking-tight text-[#01001e]">
                     Renforcer les organisations <br /> dans la durée.
                 </h1>
                 <div className="relative max-w-2xl border-l-2 border-[#0000a3] pl-6">
