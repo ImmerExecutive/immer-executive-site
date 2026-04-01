@@ -99,43 +99,60 @@ export function HomeView({ services, partners, onNavigatePrestation }) {
 
             {/* Équipe */}
             <section id="equipe-section" className="max-w-7xl mx-auto px-8 py-32 scroll-mt-20">
-                <div className="max-w-3xl mb-16">
+                <div className="max-w-3xl mb-20">
                     <h2 className="text-5xl font-playfair mb-8 text-[#01001e]">Un collectif de partners engagés</h2>
                     <p className="text-[#01001e]/80 leading-relaxed font-light">
                         Nos expertises sont complémentaires. Nous sommes unis par la manière de travailler ensemble : parole franche, confiance, responsabilité.
                     </p>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-6 gap-y-10">
-                    {partners.map((p, i) => (
-                        <div key={i} className="group">
-                            <div className="aspect-square bg-gray-50 flex items-center justify-center border border-gray-100 mb-4 rounded-sm overflow-hidden relative">
-                                {p.photo ? (
-                                    <img
-                                        src={p.photo}
-                                        alt={p.name}
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                    />
-                                ) : (
-                                    <span className="text-[#01001e]/10 font-playfair text-5xl select-none">{p.initial}</span>
-                                )}
-                                <div className="absolute inset-0 bg-[#01001e] opacity-0 group-hover:opacity-10 transition-opacity" />
+
+                {[
+                    { label: 'Chasse de tête / Transition', category: 'Chasse de tête & Transition' },
+                    { label: 'Accompagnement', category: 'Accompagnement' },
+                    { label: 'Soutien opérationnel', category: 'Soutien opérationnel' },
+                ].map(({ label, category }) => {
+                    const group = partners.filter(p => p.category === category);
+                    if (!group.length) return null;
+                    return (
+                        <div key={category} className="mb-16 last:mb-0">
+                            <div className="flex items-center gap-6 mb-10">
+                                <span className="text-[11px] font-bold uppercase tracking-[0.4em] text-gray-400 whitespace-nowrap">{label}</span>
+                                <div className="h-[1px] flex-1 bg-gray-100" />
                             </div>
-                            <h4 className="text-xs font-bold uppercase tracking-[0.15em] mb-1 text-[#01001e] leading-tight">{p.name}</h4>
-                            <p className="text-xs text-gray-500 uppercase tracking-wider leading-tight mb-2">{p.role}</p>
-                            {p.linkedin && (
-                                <a
-                                    href={p.linkedin}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="inline-block text-gray-300 hover:text-[#0000a3] transition-colors"
-                                    aria-label={`LinkedIn de ${p.name}`}
-                                >
-                                    <Linkedin className="w-3 h-3" />
-                                </a>
-                            )}
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-6 gap-y-10">
+                                {group.map((p, i) => (
+                                    <div key={i} className="group">
+                                        <div className="aspect-square bg-gray-50 flex items-center justify-center border border-gray-100 mb-4 rounded-sm overflow-hidden relative">
+                                            {p.photo ? (
+                                                <img
+                                                    src={p.photo}
+                                                    alt={p.name}
+                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                />
+                                            ) : (
+                                                <span className="text-[#01001e]/10 font-playfair text-5xl select-none">{p.initial}</span>
+                                            )}
+                                            <div className="absolute inset-0 bg-[#01001e] opacity-0 group-hover:opacity-10 transition-opacity" />
+                                        </div>
+                                        <h4 className="text-xs font-bold uppercase tracking-[0.15em] mb-1 text-[#01001e] leading-tight">{p.name}</h4>
+                                        <p className="text-xs text-gray-500 uppercase tracking-wider leading-tight mb-2">{p.role}</p>
+                                        {p.linkedin && (
+                                            <a
+                                                href={p.linkedin}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-block text-gray-300 hover:text-[#0000a3] transition-colors"
+                                                aria-label={`LinkedIn de ${p.name}`}
+                                            >
+                                                <Linkedin className="w-3 h-3" />
+                                            </a>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-                    ))}
-                </div>
+                    );
+                })}
                 <div className="mt-16 flex justify-center">
                     <button
                         onClick={navigateToContact}
