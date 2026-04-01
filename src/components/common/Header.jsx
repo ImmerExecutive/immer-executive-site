@@ -8,12 +8,12 @@ export function Header({ currentPage, setCurrentPage, navigateToHomeSection, nav
     const closeMobile = () => { setMobileOpen(false); setServicesOpen(false); };
 
     return (
-        <nav className="border-b border-gray-100 py-4 px-8 flex justify-between items-center sticky top-0 bg-white/95 backdrop-blur-md z-50 h-20">
+        <nav className="border-b border-gray-100 py-4 px-8 flex justify-between items-center sticky top-0 bg-white/95 backdrop-blur-md z-50 h-24">
             <div
                 className="cursor-pointer"
                 onClick={() => { setCurrentPage('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); closeMobile(); }}
             >
-                <img src="/logo.png" alt="Immer Executive" className="h-12 w-auto" />
+                <img src="/logo.png" alt="Immer Executive" className="h-16 w-auto" />
             </div>
 
             {/* Desktop nav */}
