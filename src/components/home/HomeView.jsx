@@ -13,11 +13,18 @@ export function HomeView({ services, partners, onNavigatePrestation }) {
     return (
         <div className="animate-in fade-in duration-1000">
             {/* Hero */}
-            <section className="max-w-7xl mx-auto px-8 pt-32 pb-24 border-b border-gray-100">
-                <h1 className="text-6xl md:text-8xl font-playfair mb-12 leading-[1.1] tracking-tight text-[#01001e]">
+            <section className="relative max-w-7xl mx-auto px-8 pt-32 pb-24 border-b border-gray-100 overflow-hidden">
+                {/* Filigrane */}
+                <img
+                    src="/forme-immer.svg"
+                    aria-hidden="true"
+                    className="absolute -right-32 top-1/2 -translate-y-1/2 w-[520px] opacity-[0.06] pointer-events-none select-none"
+                    style={{ filter: 'blur(1px)' }}
+                />
+                <h1 className="relative text-6xl md:text-8xl font-playfair mb-12 leading-[1.1] tracking-tight text-[#01001e]">
                     Renforcer les organisations <br /> dans la durée.
                 </h1>
-                <div className="max-w-2xl border-l-2 border-[#0000a3] pl-6">
+                <div className="relative max-w-2xl border-l-2 border-[#0000a3] pl-6">
                     <p className="text-lg text-[#01001e]/75 leading-relaxed font-light">
                         Immer Executive est depuis près de dix ans un cabinet de conseil et de chasse de tête en France et à l'international.
                         Nous intervenons dans le cadre d'une relation bilatérale aux côtés du dirigeant pour renforcer les organisations dans les situations qui les engagent durablement.
