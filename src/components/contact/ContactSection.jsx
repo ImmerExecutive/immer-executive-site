@@ -7,7 +7,7 @@ export function ContactSection() {
         <section id="contact-section" className="max-w-7xl mx-auto px-8 py-32 border-t border-gray-100 scroll-mt-20">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-24">
                 <div>
-                    <h2 className="text-5xl font-playfair mb-10 leading-tight">Commençons par échanger en toute confidentialité.</h2>
+                    <h2 className="text-5xl font-playfair mb-10 leading-tight">Commençons par échanger</h2>
                     <p className="text-[#01001e]/80 mb-12 font-light leading-relaxed italic">
                         Les situations que nous accompagnons sont souvent sensibles et engagent les personnes comme les organisations. Les échanges sont, par nature, strictement confidentiels.
                     </p>
@@ -15,24 +15,26 @@ export function ContactSection() {
                         <ContactItem icon={<Mail className="w-4 h-4" />} label="Email direct" value="contact@immer-executive.com" href="mailto:contact@immer-executive.com" />
                         <ContactItem icon={<MapPin className="w-4 h-4" />} label="Siège Paris" value="66 avenue des Champs-Élysées, 75008, Paris" />
                     </div>
-                    <div className="space-y-4 pt-8 border-t border-gray-100">
-                        <p className="text-sm uppercase tracking-[0.3em] font-bold text-gray-400 mb-4">Vous êtes un candidat ou manager de transition ?</p>
-                        <a
-                            href="mailto:contact@immer-executive.com?subject=Candidature — Base de données Immer Executive"
-                            className="flex items-center gap-3 text-xs uppercase tracking-widest font-bold text-gray-600 hover:text-[#0000a3] transition-colors group"
-                        >
-                            <Users className="w-4 h-4" />
-                            Candidats — Enregistrez-vous dans notre base
-                        </a>
-                        <a
-                            href="https://airtable.com/appAQmwJcnBdjw1MG/shrdSG2artqa0Kqqz"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-3 text-xs uppercase tracking-widest font-bold text-gray-600 hover:text-[#0000a3] transition-colors group"
-                        >
-                            <Briefcase className="w-4 h-4" />
-                            Managers de transition — Enregistrez-vous dans notre base
-                        </a>
+                    <div className="pt-8 border-t border-gray-100">
+                        <p className="text-base font-semibold text-[#01001e] mb-5">Vous êtes un candidat ou manager de transition ?</p>
+                        <div className="space-y-4">
+                            <a
+                                href="mailto:contact@immer-executive.com?subject=Candidature — Base de données Immer Executive"
+                                className="flex items-center gap-3 text-sm font-bold text-[#0000a3] hover:text-[#01001e] transition-colors"
+                            >
+                                <Users className="w-4 h-4 shrink-0" />
+                                Candidats — Enregistrez-vous dans notre base
+                            </a>
+                            <a
+                                href="https://airtable.com/appAQmwJcnBdjw1MG/shrdSG2artqa0Kqqz"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-3 text-sm font-bold text-[#0000a3] hover:text-[#01001e] transition-colors"
+                            >
+                                <Briefcase className="w-4 h-4 shrink-0" />
+                                Managers de transition — Enregistrez-vous dans notre base
+                            </a>
+                        </div>
                     </div>
                 </div>
                 <div className="bg-white border border-gray-100 p-12 rounded-sm shadow-sm relative border-t-4 border-[#01001e]">

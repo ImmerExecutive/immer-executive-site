@@ -28,10 +28,7 @@ export function HomeView({ services, partners, onNavigatePrestation }) {
             {/* Valeurs */}
             <div className="bg-gray-50 border-b border-gray-100">
             <section id="valeurs-section" className="max-w-7xl mx-auto px-8 py-32 scroll-mt-20">
-                <div className="flex items-center gap-6 mb-20">
-                    <span className="text-xs font-bold uppercase tracking-[0.4em] text-gray-500 whitespace-nowrap">Posture & Valeurs</span>
-                    <div className="h-[1px] flex-1 bg-gray-100"></div>
-                </div>
+                <h2 className="text-5xl font-playfair mb-20 text-[#01001e]">Posture & Valeurs</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
                     <ValueCard
                         title="Confiance"
@@ -55,7 +52,7 @@ export function HomeView({ services, partners, onNavigatePrestation }) {
             {/* Services Grid */}
             <section id="services-axes" className="max-w-7xl mx-auto px-4 md:px-8 py-32 bg-[#01001e] text-white scroll-mt-20 rounded-sm">
                 <div className="max-w-2xl mb-20">
-                    <h2 className="text-4xl md:text-5xl font-playfair mb-6 leading-tight">Nos quatre axes <br /> d'intervention</h2>
+                    <h2 className="text-5xl font-playfair mb-6 leading-tight">Nos quatre axes <br /> d'intervention</h2>
                     <p className="text-gray-400 font-light tracking-wide">Des solutions sur-mesure pour chaque niveau de l'organisation dirigeante.</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -89,7 +86,7 @@ export function HomeView({ services, partners, onNavigatePrestation }) {
             {/* Équipe */}
             <section id="equipe-section" className="max-w-7xl mx-auto px-8 py-32 scroll-mt-20">
                 <div className="max-w-3xl mb-20">
-                    <h2 className="text-5xl font-playfair mb-8 text-[#01001e]">Un collectif de partners engagés</h2>
+                    <h2 className="text-5xl font-playfair mb-8 text-[#01001e]">Un collectif engagé</h2>
                     <p className="text-[#01001e]/80 leading-relaxed font-light">
                         Nos expertises sont complémentaires. Nous sommes unis par la manière de travailler ensemble : parole franche, confiance, responsabilité.
                     </p>
@@ -105,7 +102,7 @@ export function HomeView({ services, partners, onNavigatePrestation }) {
                     return (
                         <div key={category} className="mb-16 last:mb-0">
                             <div className="flex items-center gap-6 mb-10">
-                                <span className="text-[11px] font-bold uppercase tracking-[0.4em] text-gray-400 whitespace-nowrap">{label}</span>
+                                <span className="text-sm font-bold uppercase tracking-[0.3em] text-gray-500 whitespace-nowrap">{label}</span>
                                 <div className="h-[1px] flex-1 bg-gray-100" />
                             </div>
                             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-6 gap-y-10">
