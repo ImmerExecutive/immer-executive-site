@@ -10,14 +10,10 @@ export function Header({ currentPage, setCurrentPage, navigateToHomeSection, nav
     return (
         <nav className="border-b border-gray-100 py-4 px-8 flex justify-between items-center sticky top-0 bg-white/95 backdrop-blur-md z-50 h-20">
             <div
-                className="flex items-center gap-3 cursor-pointer group"
+                className="cursor-pointer"
                 onClick={() => { setCurrentPage('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); closeMobile(); }}
             >
-                <img src="/favicon.svg" alt="" className="h-8 w-8 shrink-0" />
-                <div className="flex flex-col leading-none">
-                    <span className="text-[17px] font-bold uppercase tracking-[0.18em] text-[#01001e] group-hover:text-[#0000a3] transition-colors">IMMER</span>
-                    <span className="text-[8px] font-semibold uppercase tracking-[0.35em] text-[#01001e]/50 group-hover:text-[#0000a3]/60 transition-colors mt-[2px]">Executive</span>
-                </div>
+                <img src="/logo.png" alt="Immer Executive" className="h-12 w-auto" />
             </div>
 
             {/* Desktop nav */}
