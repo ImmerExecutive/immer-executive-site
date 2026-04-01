@@ -14,25 +14,14 @@ export function HomeView({ services, partners, onNavigatePrestation }) {
         <div className="animate-in fade-in duration-1000">
             {/* Hero */}
             <section className="max-w-7xl mx-auto px-8 pt-32 pb-24 border-b border-gray-100">
-                <div className="flex flex-col lg:flex-row items-start gap-16">
-                    <div className="flex-1">
-                        <h1 className="text-6xl md:text-8xl font-playfair mb-12 leading-[1.1] tracking-tight text-[#01001e]">
-                            Renforcer les organisations <br /> dans la durée.
-                        </h1>
-                        <div className="max-w-2xl border-l-2 border-[#0000a3] pl-6">
-                            <p className="text-lg text-[#01001e]/75 leading-relaxed font-light">
-                                Immer Executive est depuis près de dix ans un cabinet de conseil et de chasse de tête en France et à l'international.
-                                Nous intervenons dans le cadre d'une relation bilatérale aux côtés du dirigeant pour renforcer les organisations dans les situations qui les engagent durablement.
-                            </p>
-                        </div>
-                    </div>
-                    <div className="shrink-0 flex flex-col items-center gap-5 lg:pt-4">
-                        <img src="/logo-symbol-dark.svg" alt="" className="h-20 w-20" />
-                        <div className="text-center leading-none">
-                            <div className="text-[42px] font-bold tracking-[0.12em] text-[#01001e] font-playfair">IMMER</div>
-                            <div className="text-[13px] font-semibold tracking-[0.42em] text-[#01001e] mt-2">EXECUTIVE</div>
-                        </div>
-                    </div>
+                <h1 className="text-6xl md:text-8xl font-playfair mb-12 leading-[1.1] tracking-tight text-[#01001e]">
+                    Renforcer les organisations <br /> dans la durée.
+                </h1>
+                <div className="max-w-2xl border-l-2 border-[#0000a3] pl-6">
+                    <p className="text-lg text-[#01001e]/75 leading-relaxed font-light">
+                        Immer Executive est depuis près de dix ans un cabinet de conseil et de chasse de tête en France et à l'international.
+                        Nous intervenons dans le cadre d'une relation bilatérale aux côtés du dirigeant pour renforcer les organisations dans les situations qui les engagent durablement.
+                    </p>
                 </div>
             </section>
 
