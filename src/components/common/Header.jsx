@@ -8,7 +8,7 @@ export function Header({ currentPage, setCurrentPage, navigateToHomeSection, nav
     const closeMobile = () => { setMobileOpen(false); setServicesOpen(false); };
 
     return (
-        <nav className="border-b border-gray-100 py-4 px-8 flex justify-between items-center sticky top-0 bg-white/95 backdrop-blur-md z-50 h-24">
+        <nav className="border-b border-gray-100 py-4 px-8 flex justify-between items-center fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-md z-50 h-24">
             <div
                 className="cursor-pointer"
                 onClick={() => { setCurrentPage('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); closeMobile(); }}
@@ -17,7 +17,7 @@ export function Header({ currentPage, setCurrentPage, navigateToHomeSection, nav
             </div>
 
             {/* Desktop nav */}
-            <div className="hidden md:flex items-center gap-10 text-[13px] uppercase tracking-[0.2em] font-semibold text-gray-700">
+            <div className="hidden md:flex items-center gap-10 text-[15px] uppercase tracking-[0.2em] font-semibold text-gray-700">
                 <button
                     onClick={() => { setCurrentPage('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                     className={currentPage === 'home' ? 'text-[#01001e]' : 'hover:text-[#01001e]'}
@@ -60,7 +60,7 @@ export function Header({ currentPage, setCurrentPage, navigateToHomeSection, nav
 
             {/* Mobile menu */}
             {mobileOpen && (
-                <div className="absolute top-20 left-0 right-0 bg-white border-b border-gray-100 shadow-xl z-50 md:hidden">
+                <div className="absolute top-24 left-0 right-0 bg-white border-b border-gray-100 shadow-xl z-50 md:hidden">
                     <div className="flex flex-col px-8 py-6 gap-1 text-[11px] uppercase tracking-[0.2em] font-semibold text-gray-700">
                         <button
                             onClick={() => { setCurrentPage('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); closeMobile(); }}

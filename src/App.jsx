@@ -70,7 +70,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#fcfcfc] text-[#01001e] font-['Hind',sans-serif] selection:bg-[#01001e] selection:text-white overflow-x-hidden">
+    <div className="min-h-screen bg-[#fcfcfc] text-[#01001e] font-['Hind',sans-serif] selection:bg-[#01001e] selection:text-white overflow-x-hidden pt-24">
       <Header
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}

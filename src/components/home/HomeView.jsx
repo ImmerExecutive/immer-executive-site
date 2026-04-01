@@ -63,20 +63,19 @@ export function HomeView({ services, partners, onNavigatePrestation }) {
                             </div>
                             <h3 className="text-lg font-bold uppercase tracking-tight mb-4 md:min-h-[3.5rem] border-b border-[#01001e]/10 pb-2">{axe.title}</h3>
                             <p className="text-sm text-gray-600 mb-8 leading-relaxed line-clamp-3 font-light md:min-h-[5rem]">{axe.description}</p>
-                            <div className="pt-6 border-t border-[#01001e]/10 flex flex-col gap-4">
-                                {axe.items.map((item) => (
-                                    <button
-                                        key={item.id}
-                                        onClick={() => item.contactOnly
-                                            ? document.getElementById('contact-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                                            : onNavigatePrestation(axe.id, item.id)
-                                        }
-                                        className="flex items-center justify-between w-full text-left text-[11px] font-bold uppercase tracking-widest text-[#01001e]/50 hover:text-[#0000a3] transition-colors group/item"
-                                    >
-                                        {item.label}
-                                        <ChevronRight className="w-3 h-3 opacity-0 group-hover/item:opacity-100 transition-all translate-x-[-4px] group-hover/item:translate-x-0" />
-                                    </button>
-                                ))}
+                            <div className="pt-6 border-t border-[#01001e]/10 mt-auto">
+                                <ul className="flex flex-col gap-1 mb-6">
+                                    {axe.items.map((item) => (
+                                        <li key={item.id} className="text-[11px] uppercase tracking-widest text-[#01001e]/40 font-semibold">{item.label}</li>
+                                    ))}
+                                </ul>
+                                <button
+                                    onClick={() => onNavigatePrestation(axe.id)}
+                                    className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-[#0000a3] hover:text-[#01001e] transition-colors group/cta"
+                                >
+                                    En savoir plus
+                                    <ChevronRight className="w-3 h-3 transition-transform group-hover/cta:translate-x-1" />
+                                </button>
                             </div>
                         </div>
                     ))}
