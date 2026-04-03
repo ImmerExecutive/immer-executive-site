@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronDown, Menu, X } from 'lucide-react';
 
-export function Header({ currentPage, setCurrentPage, navigateToHomeSection, navigateToService, services }) {
+export function Header({ currentPage, setCurrentPage, navigateToHomeSection, navigateToService, navigateToPage, services }) {
     const [mobileOpen, setMobileOpen] = useState(false);
     const [servicesOpen, setServicesOpen] = useState(false);
 
@@ -45,6 +45,7 @@ export function Header({ currentPage, setCurrentPage, navigateToHomeSection, nav
                     </div>
                 </div>
 
+                <button onClick={() => navigateToHomeSection('candidats-section')} className="hover:text-[#01001e]">Candidats</button>
                 <button onClick={() => navigateToHomeSection('equipe-section')} className="hover:text-[#01001e]">Équipe</button>
                 <button onClick={() => navigateToHomeSection('contact-section')} className="hover:text-[#01001e]">Contact</button>
             </div>
@@ -89,6 +90,12 @@ export function Header({ currentPage, setCurrentPage, navigateToHomeSection, nav
                             </div>
                         )}
 
+                        <button
+                            onClick={() => { navigateToHomeSection('candidats-section'); closeMobile(); }}
+                            className="text-left py-3 border-b border-gray-50 hover:text-[#01001e]"
+                        >
+                            Candidats
+                        </button>
                         <button
                             onClick={() => { navigateToHomeSection('equipe-section'); closeMobile(); }}
                             className="text-left py-3 border-b border-gray-50 hover:text-[#01001e]"

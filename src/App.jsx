@@ -4,6 +4,7 @@ import { Header } from './components/common/Header';
 import { Footer } from './components/common/Footer';
 import { HomeView } from './components/home/HomeView';
 import { ServiceDetailView } from './components/services/ServiceDetailView';
+import { MentionsLegales } from './components/legal/MentionsLegales';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState('home');
@@ -25,6 +26,9 @@ export default function App() {
         setCurrentPage('home');
         setActiveServiceId(null);
         setTargetPrestation(null);
+      } else if (state.page === 'mentions-legales') {
+        setCurrentPage('mentions-legales');
+        window.scrollTo({ top: 0, behavior: 'instant' });
         if (state?.sectionId) {
           setTimeout(() => {
             const el = document.getElementById(state.sectionId);
@@ -49,6 +53,12 @@ export default function App() {
       const el = document.getElementById(id);
       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 100);
+  };
+
+  const navigateToPage = (page) => {
+    setCurrentPage(page);
+    history.pushState({ page }, '');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const navigateToService = (serviceId, prestationId = null) => {
@@ -76,17 +86,19 @@ export default function App() {
         setCurrentPage={setCurrentPage}
         navigateToHomeSection={navigateToHomeSection}
         navigateToService={navigateToService}
+        navigateToPage={navigateToPage}
         services={services}
       />
 
       <main>
-        {currentPage === 'home' ? (
+        {currentPage === 'home' && (
           <HomeView
             services={services}
             partners={partners}
             onNavigatePrestation={navigateToService}
           />
-        ) : (
+        )}
+        {currentPage === 'service-detail' && (
           <ServiceDetailView
             serviceId={activeServiceId}
             targetPrestation={targetPrestation}
@@ -94,9 +106,12 @@ export default function App() {
             onBack={() => history.back()}
           />
         )}
+        {currentPage === 'mentions-legales' && (
+          <MentionsLegales onBack={() => history.back()} />
+        )}
       </main>
 
-      <Footer />
+      <Footer navigateToPage={navigateToPage} />
     </div>
   );
 }
