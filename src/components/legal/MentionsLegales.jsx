@@ -39,9 +39,9 @@ export function MentionsLegales({ onBack }) {
                     <h2 className="text-lg font-bold text-[#01001e] uppercase tracking-tight mb-4">3. Hébergement</h2>
                     <p className="text-sm">Le site est hébergé par :</p>
                     <ul className="mt-3 space-y-1 text-sm">
-                        <li><span className="font-semibold">Société :</span> Vercel Inc.</li>
-                        <li><span className="font-semibold">Adresse :</span> 340 Pine Street, Suite 900, San Francisco, CA 94104, États-Unis</li>
-                        <li><span className="font-semibold">Site web :</span> www.vercel.com</li>
+                        <li><span className="font-semibold">Société :</span> Cloudflare, Inc.</li>
+                        <li><span className="font-semibold">Adresse :</span> 101 Townsend Street, San Francisco, CA 94107, États-Unis</li>
+                        <li><span className="font-semibold">Site web :</span> www.cloudflare.com</li>
                     </ul>
                 </div>
 
