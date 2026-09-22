@@ -6,41 +6,49 @@ import { HomeView } from './components/home/HomeView';
 import { ServiceDetailView } from './components/services/ServiceDetailView';
 import { MentionsLegales } from './components/legal/MentionsLegales';
 
+const SERVICE_URL_MAP = {
+  soutenir:  'soutenir',
+  construire: 'construire',
+  reactiver:  'reactiver',
+  renforcer:  'renforcer',
+  digital:    'solutions',
+};
+
+const URL_SERVICE_MAP = Object.fromEntries(
+  Object.entries(SERVICE_URL_MAP).map(([id, slug]) => [slug, id])
+);
+
+function parseLocation() {
+  const path = window.location.pathname;
+  if (path === '/' || path === '') return { page: 'home' };
+  if (path === '/mentions-legales') return { page: 'mentions-legales' };
+  const match = path.match(/^\/services\/([^/]+)(?:\/([^/]+))?/);
+  if (match) {
+    const serviceId = URL_SERVICE_MAP[match[1]];
+    if (serviceId) return { page: 'service-detail', serviceId, prestationId: match[2] || null };
+  }
+  return { page: 'home' };
+}
+
 export default function App() {
-  const [currentPage, setCurrentPage] = useState('home');
-  const [activeServiceId, setActiveServiceId] = useState(null);
-  const [targetPrestation, setTargetPrestation] = useState(null);
+  const initial = parseLocation();
+  const [currentPage, setCurrentPage] = useState(initial.page);
+  const [activeServiceId, setActiveServiceId] = useState(initial.serviceId || null);
+  const [targetPrestation, setTargetPrestation] = useState(initial.prestationId || null);
 
   const { services, fullServicesContent, partners, loading } = useData();
 
-  // Initialise l'état history au chargement
   useEffect(() => {
-    history.replaceState({ page: 'home' }, '');
+    history.replaceState({}, '', window.location.pathname);
   }, []);
 
-  // Écoute le bouton retour/suivant du navigateur
   useEffect(() => {
-    const handlePop = (e) => {
-      const state = e.state;
-      if (!state || state.page === 'home') {
-        setCurrentPage('home');
-        setActiveServiceId(null);
-        setTargetPrestation(null);
-      } else if (state.page === 'mentions-legales') {
-        setCurrentPage('mentions-legales');
-        window.scrollTo({ top: 0, behavior: 'instant' });
-        if (state?.sectionId) {
-          setTimeout(() => {
-            const el = document.getElementById(state.sectionId);
-            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }, 50);
-        }
-      } else if (state.page === 'service-detail') {
-        setActiveServiceId(state.serviceId);
-        setTargetPrestation(state.prestationId || null);
-        setCurrentPage('service-detail');
-        window.scrollTo({ top: 0, behavior: 'instant' });
-      }
+    const handlePop = () => {
+      const { page, serviceId, prestationId } = parseLocation();
+      setCurrentPage(page);
+      setActiveServiceId(serviceId || null);
+      setTargetPrestation(prestationId || null);
+      if (page !== 'service-detail') window.scrollTo({ top: 0, behavior: 'instant' });
     };
     window.addEventListener('popstate', handlePop);
     return () => window.removeEventListener('popstate', handlePop);
@@ -48,7 +56,9 @@ export default function App() {
 
   const navigateToHomeSection = (id) => {
     setCurrentPage('home');
-    history.pushState({ page: 'home', sectionId: id }, '');
+    setActiveServiceId(null);
+    setTargetPrestation(null);
+    history.pushState({}, '', '/');
     setTimeout(() => {
       const el = document.getElementById(id);
       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -57,7 +67,10 @@ export default function App() {
 
   const navigateToPage = (page) => {
     setCurrentPage(page);
-    history.pushState({ page }, '');
+    setActiveServiceId(null);
+    setTargetPrestation(null);
+    const url = page === 'mentions-legales' ? '/mentions-legales' : '/';
+    history.pushState({}, '', url);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -65,7 +78,9 @@ export default function App() {
     setActiveServiceId(serviceId);
     setTargetPrestation(prestationId);
     setCurrentPage('service-detail');
-    history.pushState({ page: 'service-detail', serviceId, prestationId }, '');
+    const slug = SERVICE_URL_MAP[serviceId] || serviceId;
+    const url = prestationId ? `/services/${slug}/${prestationId}` : `/services/${slug}`;
+    history.pushState({}, '', url);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
