@@ -60,7 +60,7 @@ export function HomeView({ services, partners, onNavigatePrestation }) {
             {/* Services Grid */}
             <section id="services-axes" className="max-w-7xl mx-auto px-4 md:px-8 py-32 bg-[#01001e] text-white scroll-mt-20 rounded-sm">
                 <div className="max-w-2xl mb-20">
-                    <h2 className="text-5xl font-playfair mb-6 leading-tight">Nos quatre axes <br /> d'intervention</h2>
+                    <h2 className="text-5xl font-playfair mb-6 leading-tight">Nos cinq axes <br /> d'intervention</h2>
                     <p className="text-gray-400 font-light tracking-wide">Des solutions sur-mesure pour chaque niveau de l'organisation dirigeante.</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">

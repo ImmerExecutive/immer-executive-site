@@ -35,6 +35,18 @@ export const SERVICES_DATA = [
         ]
     },
     {
+        id: 'digital',
+        title: 'Solutions Digitales sur-mesure',
+        description: 'De l\'ERP aux applications internes, optimiser et automatiser vos processus métiers en respectant la temporalité des équipes pour gagner en productivité.',
+        iconName: 'Monitor',
+        items: [
+            { id: 'ia-data', label: 'IA / Data' },
+            { id: 'analyse-donnees-digital', label: 'Analyse des données' },
+            { id: 'automatisations', label: 'Automatisations' },
+            { id: 'optimisation-process', label: 'Optimisation des process' }
+        ]
+    },
+    {
         id: 'renforcer',
         title: 'Renforcer l\'opérationnel',
         description: 'Sécuriser les ressources et alliances pour franchir un cap de croissance.',
@@ -42,8 +54,7 @@ export const SERVICES_DATA = [
         items: [
             { id: 'levee', label: 'Levée de fonds' },
             { id: 'partenaires', label: 'Recherche de partenaires BtoB' },
-            { id: 'partage', label: 'Directions à temps partagé' },
-            { id: 'analyse-donnees', label: 'IA / Data — Analyse et exploitation des données' }
+            { id: 'partage', label: 'Directions à temps partagé' }
         ]
     }
 ];
@@ -160,6 +171,53 @@ export const FULL_SERVICES_CONTENT = {
             }
         ]
     },
+    'digital': {
+        subtitle: 'Axe 05',
+        title: 'Solutions Digitales sur-mesure',
+        intro: 'De l\'ERP aux applications internes, optimiser et automatiser vos processus métiers en respectant la temporalité des équipes pour gagner en productivité.',
+        prestations: [
+            {
+                id: 'ia-data',
+                title: 'IA / Data',
+                iconName: 'Cpu',
+                intro: 'Exploiter la puissance de l\'intelligence artificielle et de la donnée pour transformer vos processus décisionnels et opérationnels.',
+                situation: 'L\'organisation dispose de données mais peine à les exploiter stratégiquement. Les outils IA existent mais leur intégration dans les processus métiers reste parcellaire.',
+                intervention: 'Audit des données existantes, identification des cas d\'usage IA pertinents, déploiement de solutions adaptées à vos processus et accompagnement des équipes.',
+                effet: 'Des décisions mieux éclairées, des processus accélérés, une organisation qui capitalise sur sa donnée.',
+                partnerContact: { name: 'Raphaël', email: 'raphael.besson@immer-executive.com' }
+            },
+            {
+                id: 'analyse-donnees-digital',
+                title: 'IA / Data — Analyse et exploitation opérationnelle des données',
+                iconName: 'Database',
+                intro: 'Les organisations disposent souvent de données brutes nombreuses, mais peu exploitées stratégiquement car non synthétiques, ou ne rentrant pas dans les formats d\'analyse classiques (excel, compta…). L\'enjeu n\'est pas d\'en produire davantage, mais d\'extraire, structurer et interpréter celles qui existent déjà et qui constituent un véritable trésor stratégique, permettant de révéler des opportunités surprenantes. Nous intervenons pour proposer, à partir de l\'analyse structurée d\'un volume d\'informations, des stratégies et des plans d\'action immédiatement opérationnels.',
+                situation: 'Travaillant sur la base de tableaux et de synthèses déjà formatés, l\'entreprise a perdu le contact avec des matériaux commerciaux et de relation clients basiques, mais diffus et trop abondants pour être traités humainement : mails, devis, appels d\'offres, échanges SAV. On perçoit des signaux faibles, mais trop diffus pour être objectivés, voire même pour déclencher des décisions.',
+                intervention: 'Cartographie et collecte des données existantes. Traitement par LLM des données, analyses et restitution d\'outils de décision et d\'actions opérationnelles immédiates.',
+                effet: 'Une compréhension nouvelle des parties prenantes au-delà des données chiffrées. Identification de besoins non traités, de clients délaissés, de points forts non valorisés, de marchés potentiels. Recommandation d\'actions individualisées ou stratégiques.',
+                partnerContact: { name: 'Raphaël', email: 'raphael.besson@immer-executive.com' }
+            },
+            {
+                id: 'automatisations',
+                title: 'Automatisations',
+                iconName: 'Zap',
+                intro: 'Automatiser les tâches répétitives pour libérer du temps humain et réduire les erreurs opérationnelles.',
+                situation: 'Les équipes passent du temps sur des tâches manuelles à faible valeur ajoutée : saisies, relances, reporting, transferts de données entre outils.',
+                intervention: 'Identification des processus automatisables, conception et déploiement des flux d\'automatisation, formation des équipes à leur utilisation.',
+                effet: 'Des équipes recentrées sur les tâches à valeur ajoutée. Une productivité accrue sans surcharge.',
+                partnerContact: { name: 'Raphaël', email: 'raphael.besson@immer-executive.com' }
+            },
+            {
+                id: 'optimisation-process',
+                title: 'Optimisation des process',
+                iconName: 'TrendingUp',
+                intro: 'Revoir et simplifier les processus métiers pour gagner en fluidité, en cohérence et en efficacité collective.',
+                situation: 'Les processus ont évolué par accumulation, sans vision d\'ensemble. Des frictions persistent, des étapes sont redondantes, et la coordination entre équipes génère des pertes de temps.',
+                intervention: 'Cartographie des processus existants, identification des frictions et des redondances, refonte et déploiement de processus optimisés en concertation avec les équipes.',
+                effet: 'Des processus fluides, compris et adoptés par les équipes. Une organisation plus agile et moins dépendante des silos.',
+                partnerContact: { name: 'Raphaël', email: 'raphael.besson@immer-executive.com' }
+            }
+        ]
+    },
     'renforcer': {
         subtitle: 'Axe 04',
         title: 'Renforcer l\'opérationnel',
@@ -199,16 +257,6 @@ export const FULL_SERVICES_CONTENT = {
                     { label: 'Direction Commerciale', name: 'Pierre', email: 'pierre.desurville@immer-executive.com' },
                 ]
             },
-            {
-                id: 'analyse-donnees',
-                title: 'IA / Data — Analyse et exploitation opérationnelle des données',
-                iconName: 'Database',
-                intro: 'Les organisations disposent souvent de données brutes nombreuses, mais peu exploitées stratégiquement car non synthétiques, ou ne rentrant pas dans les formats d\'analyse classiques (excel, compta…). L\'enjeu n\'est pas d\'en produire davantage, mais d\'extraire, structurer et interpréter celles qui existent déjà et qui constituent un véritable trésor stratégique, permettant de révéler des opportunités surprenantes. Nous intervenons pour proposer, à partir de l\'analyse structurée d\'un volume d\'informations, des stratégies et des plans d\'action immédiatement opérationnels.',
-                situation: 'Travaillant sur la base de tableaux et de synthèses déjà formatés, l\'entreprise a perdu le contact avec des matériaux commerciaux et de relation clients basiques, mais diffus et trop abondants pour être traités humainement : mails, devis, appels d\'offres, échanges SAV. On perçoit des signaux faibles, mais trop diffus pour être objectivés, voire même pour déclencher des décisions.',
-                intervention: 'Cartographie et collecte des données existantes. Traitement par LLM des données, analyses et restitution d\'outils de décision et d\'actions opérationnelles immédiates.',
-                effet: 'Une compréhension nouvelle des parties prenantes au-delà des données chiffrées. Identification de besoins non traités, de clients délaissés, de points forts non valorisés, de marchés potentiels. Recommandation d\'actions individualisées ou stratégiques.',
-                partnerContact: { name: 'Raphaël', email: 'raphael.besson@immer-executive.com' }
-            }
         ]
     }
 };
