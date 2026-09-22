@@ -35,6 +35,17 @@ export const SERVICES_DATA = [
         ]
     },
     {
+        id: 'renforcer',
+        title: 'Renforcer l\'opérationnel',
+        description: 'Sécuriser les ressources et alliances pour franchir un cap de croissance.',
+        iconName: 'TrendingUp',
+        items: [
+            { id: 'levee', label: 'Levée de fonds' },
+            { id: 'partenaires', label: 'Recherche de partenaires BtoB' },
+            { id: 'partage', label: 'Directions à temps partagé' }
+        ]
+    },
+    {
         id: 'digital',
         title: 'Solutions Digitales sur-mesure',
         description: 'De l\'ERP aux applications internes, optimiser et automatiser vos processus métiers en respectant la temporalité des équipes pour gagner en productivité.',
@@ -44,17 +55,6 @@ export const SERVICES_DATA = [
             { id: 'analyse-donnees-digital', label: 'Analyse des données' },
             { id: 'automatisations', label: 'Automatisations' },
             { id: 'optimisation-process', label: 'Optimisation des process' }
-        ]
-    },
-    {
-        id: 'renforcer',
-        title: 'Renforcer l\'opérationnel',
-        description: 'Sécuriser les ressources et alliances pour franchir un cap de croissance.',
-        iconName: 'TrendingUp',
-        items: [
-            { id: 'levee', label: 'Levée de fonds' },
-            { id: 'partenaires', label: 'Recherche de partenaires BtoB' },
-            { id: 'partage', label: 'Directions à temps partagé' }
         ]
     }
 ];
