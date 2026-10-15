@@ -93,7 +93,8 @@ export const FULL_SERVICES_CONTENT = {
                 situation: 'Le moment venu de « rendre les clefs », de quitter définitivement un poste de dirigeant, une fausse évidence s\'installe souvent à bas bruit : « ma carrière est derrière moi, ma vie aussi. » Disparaissent d\'un coup les contraintes financières et les responsabilités qui structuraient l\'existence. Reste une liberté réelle que rien n\'a préparé à habiter.',
                 intervention: 'Un parcours structuré, conduit en face-à-face entre pairs. Douze séances de deux heures, une par mois, jalonnent quatre phases : la Préparation (regarder d\'où l\'on vient, reconnaître ce qui s\'achève), l\'Exploration (identifier ses désirs propres, poser les fondations d\'une vie choisie), la Construction (confronter les possibles au réel, composer une vie plurielle, trouver ses pairs), l\'Engagement (transformer ses voies en actes, nommer son legs). Entre les séances, le directeur de parcours reste disponible. Le dialogue se tient entre dirigeants, en confidentialité, au rythme et au lieu convenu directement avec le participant.',
                 effet: 'Au terme des douze mois, le participant peut dire : « J\'ai défini un projet de vie qui m\'anime, et je l\'ai lancé. » Le parcours ne s\'arrête pas sur une intention, mais sur des premières actions engagées : un projet nommé, des pairs identifiés, un legs formulé. La liberté ouverte par la fin de la vie professionnelle est devenue une trajectoire choisie, et déjà en mouvement.',
-                partnerContact: { name: 'Henry', email: 'henry.destremau@immer-executive.com' }
+                partnerContact: { name: 'Henry', email: 'henry.destremau@immer-executive.com' },
+                cta: { label: 'Découvrir le parcours', page: 'acte3' }
             }
         ]
     },

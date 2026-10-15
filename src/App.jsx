@@ -5,6 +5,7 @@ import { Footer } from './components/common/Footer';
 import { HomeView } from './components/home/HomeView';
 import { ServiceDetailView } from './components/services/ServiceDetailView';
 import { MentionsLegales } from './components/legal/MentionsLegales';
+import { Acte3View } from './components/acte3/Acte3View';
 
 const SERVICE_URL_MAP = {
   soutenir:  'soutenir',
@@ -22,6 +23,7 @@ function parseLocation() {
   const path = window.location.pathname;
   if (path === '/' || path === '') return { page: 'home' };
   if (path === '/mentions-legales') return { page: 'mentions-legales' };
+  if (path === '/acte3' || path === '/acte3/') return { page: 'acte3' };
   const match = path.match(/^\/services\/([^/]+)(?:\/([^/]+))?/);
   if (match) {
     const serviceId = URL_SERVICE_MAP[match[1]];
@@ -69,7 +71,7 @@ export default function App() {
     setCurrentPage(page);
     setActiveServiceId(null);
     setTargetPrestation(null);
-    const url = page === 'mentions-legales' ? '/mentions-legales' : '/';
+    const url = page === 'mentions-legales' ? '/mentions-legales' : page === 'acte3' ? '/acte3' : '/';
     history.pushState({}, '', url);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -83,6 +85,15 @@ export default function App() {
     history.pushState({}, '', url);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  if (!loading && currentPage === 'acte3') {
+    return (
+      <div className="min-h-screen bg-white overflow-x-hidden">
+        <Acte3View onHome={() => navigateToPage('home')} />
+        <Footer navigateToPage={navigateToPage} />
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -119,6 +130,7 @@ export default function App() {
             targetPrestation={targetPrestation}
             fullServicesContent={fullServicesContent}
             onBack={() => history.back()}
+            onNavigatePage={navigateToPage}
           />
         )}
         {currentPage === 'mentions-legales' && (

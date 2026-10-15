@@ -9,6 +9,8 @@ export default {
       fontFamily: {
         'playfair': ['Ponzu', 'serif'],
         'hind': ['Hind', 'sans-serif'],
+        'cormorant': ['"Cormorant Garamond"', 'serif'],
+        'lato': ['Lato', 'sans-serif'],
       },
       colors: {
         'immer-blue': '#01001e',

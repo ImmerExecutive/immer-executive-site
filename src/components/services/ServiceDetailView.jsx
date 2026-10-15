@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { Icon } from '../common/Icon';
 
-export function ServiceDetailView({ serviceId, targetPrestation, fullServicesContent, onBack }) {
+export function ServiceDetailView({ serviceId, targetPrestation, fullServicesContent, onBack, onNavigatePage }) {
     const serviceData = fullServicesContent[serviceId];
 
     useEffect(() => {
@@ -65,12 +65,22 @@ export function ServiceDetailView({ serviceId, targetPrestation, fullServicesCon
                                     </div>
 
                                     <div className="flex justify-end">
-                                        <a
-                                            href="mailto:contact@immer-executive.com"
-                                            className="px-10 py-5 bg-[#01001e] text-white text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-[#0000a3] transition-all shrink-0 shadow-lg"
-                                        >
-                                            Parlons-en
-                                        </a>
+                                        {p.cta ? (
+                                            <a
+                                                href={`/${p.cta.page}`}
+                                                onClick={(e) => { e.preventDefault(); onNavigatePage(p.cta.page); }}
+                                                className="px-10 py-5 bg-[#01001e] text-white text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-[#0000a3] transition-all shrink-0 shadow-lg"
+                                            >
+                                                {p.cta.label}
+                                            </a>
+                                        ) : (
+                                            <a
+                                                href="mailto:contact@immer-executive.com"
+                                                className="px-10 py-5 bg-[#01001e] text-white text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-[#0000a3] transition-all shrink-0 shadow-lg"
+                                            >
+                                                Parlons-en
+                                            </a>
+                                        )}
                                     </div>
                                 </div>
                             </div>
