@@ -90,7 +90,7 @@ export default function App() {
     return (
       <div className="min-h-screen bg-white overflow-x-hidden">
         <Acte3View onHome={() => navigateToPage('home')} />
-        <Footer navigateToPage={navigateToPage} />
+        <Footer navigateToPage={navigateToPage} showTagline={false} />
       </div>
     );
   }

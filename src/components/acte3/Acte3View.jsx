@@ -58,6 +58,19 @@ function usePageMeta({ title, description }) {
     }, [title, description]);
 }
 
+// Symbole Immer en filigrane, cadré comme sur la couverture de la plaquette :
+// très agrandi, centré à droite et coupé par les bords.
+function Watermark() {
+    const mask = 'url(/forme-immer.svg) center / contain no-repeat';
+    return (
+        <div
+            aria-hidden="true"
+            className="absolute aspect-square -translate-x-1/2 -translate-y-1/2 pointer-events-none w-[175vw] left-[82%] top-[40%] landscape:w-[125vh] landscape:left-[74%] landscape:top-[42%]"
+            style={{ backgroundColor: 'rgba(255, 255, 255, 0.08)', WebkitMask: mask, mask }}
+        />
+    );
+}
+
 // Chevrons en filigrane, repris de la couverture de la plaquette.
 function Chevrons({ className = '' }) {
     return (
@@ -115,7 +128,7 @@ export function Acte3View({ onHome, navigateToPage }) {
 
             {/* Couverture */}
             <section className="relative min-h-[100svh] flex flex-col items-center justify-center overflow-hidden px-4 sm:px-8 text-center text-white" style={{ backgroundColor: NAVY }}>
-                <Chevrons className="absolute -right-24 top-0 h-full text-white/[0.06] pointer-events-none" />
+                <Watermark />
                 <div className="relative z-10 max-w-3xl pt-24 pb-16">
                     <p className="font-lato text-[11px] sm:text-xs font-bold uppercase tracking-[0.3em] text-white/60 mb-14">
                         Parcours individuel de douze mois
