@@ -1,5 +1,5 @@
 // Contenu de la page dédiée /acte3, repris de la plaquette Acte III.
-// Volontairement partiel : les phases sont décrites, les séances ne sont que nommées.
+// Les descriptions des séances sont reprises telles quelles de la plaquette (page 3).
 
 export const ACTE3_CONTACT_EMAIL = 'acte3@immer-executive.com';
 
@@ -15,7 +15,11 @@ export const ACTE3_PHASES = [
         title: 'Préparation',
         tagline: 'Le temps du regard',
         text: 'S\'arrêter pour regarder d\'où nous venons. Reconnaître ce qui s\'achève, recueillir ce que nous emportons.',
-        sessions: ['Qui suis-je ?', 'Déposer les armes', 'Ce que j\'emporte'],
+        sessions: [
+            { title: 'Qui suis-je ?', text: 'Qui sommes-nous, sans titre, sans rôle, sans réseau ? Le parcours commence par ce dépouillement, non pour s\'y perdre, mais pour s\'y retrouver.' },
+            { title: 'Déposer les armes', text: 'Nommer ce qui s\'achève vraiment : la structure, l\'appartenance, la légitimité quotidienne. Ce que nous laissons.' },
+            { title: 'Ce que j\'emporte', text: 'Allégés, regarder ce qui reste vraiment : forces, appuis, fidélités. Un inventaire prospectif, jamais nostalgique. Ce que nous gardons.' },
+        ],
         bg: '#d9e2ee',
         fg: '#1e3365',
     },
@@ -25,7 +29,11 @@ export const ACTE3_PHASES = [
         title: 'Exploration',
         tagline: 'Choisir de chercher',
         text: 'Écouter ce qui n\'a pas eu droit de parole. Identifier nos désirs propres, poser les fondations d\'une vie choisie.',
-        sessions: ['Ce que je veux, librement', 'Me voir par leurs yeux', 'Poser les fondations'],
+        sessions: [
+            { title: 'Ce que je veux, librement', text: 'Premier regard honnête sur nos désirs propres, hors de tout rôle : dirigeant, parent, époux, fils.' },
+            { title: 'Me voir par leurs yeux', text: 'Recevoir leurs réponses, sans défense, et les travailler avec notre directeur de parcours. Se laisser surprendre par ce que les autres voient de nous.' },
+            { title: 'Poser les fondations', text: 'Définir les blocs de notre vie : temps pour soi, passions, famille, amis, corps, voyages, activité, contribution, leurs priorités et nos non-négociables.' },
+        ],
         bg: '#8a9fc0',
         fg: '#1e3365',
     },
@@ -35,7 +43,11 @@ export const ACTE3_PHASES = [
         title: 'Construction',
         tagline: 'Bâtir ce qui nous appartient',
         text: 'Explorer les possibles, les confronter au réel. Composer une vie plurielle, trouver les pairs qui nous reconnaissent.',
-        sessions: ['Et si je…', 'Rencontrer pour éprouver', 'Choisir ses voies'],
+        sessions: [
+            { title: 'Et si je…', text: 'Explorer les possibles avec une liberté entière, sans filtre ni autocensure.' },
+            { title: 'Rencontrer pour éprouver', text: 'Confronter nos hypothèses au réel par des rencontres concrètes.' },
+            { title: 'Choisir ses voies', text: 'La vie après la carrière n\'est pas monobloc : plusieurs voies coexistent, et c\'est leur composition qui fait une vie pleine.' },
+        ],
         bg: '#364f86',
         fg: '#ffffff',
     },
@@ -45,7 +57,11 @@ export const ACTE3_PHASES = [
         title: 'Engagement',
         tagline: 'Se déployer pour transmettre',
         text: 'Transformer nos voies en actes. Nommer notre legs. Prendre l\'engagement de la vie qui commence.',
-        sessions: ['Me lancer', 'Ce que je transmets au monde', 'Ma promesse'],
+        sessions: [
+            { title: 'Me lancer', text: 'Transformer nos voies en actes concrets. Passer du conditionnel au présent.' },
+            { title: 'Ce que je transmets au monde', text: 'Nommer notre legs (valeurs, compétences, vision), ses héritiers et sa durée. Du « ce que je fais » au « ce que je laisse ».' },
+            { title: 'Ma promesse', text: 'S\'engager devant soi-même pour la vie qui commence.' },
+        ],
         bg: '#121a2e',
         fg: '#ffffff',
     },

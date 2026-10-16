@@ -178,23 +178,26 @@ export function Acte3View({ onHome, navigateToPage }) {
                         </p>
                     </div>
 
-                    <ol className="grid gap-px sm:grid-cols-2 lg:grid-cols-4 bg-[#121a2e]/10">
+                    <ol className="grid gap-6 md:gap-8 md:grid-cols-2 md:auto-rows-fr">
                         {ACTE3_PHASES.map((phase, phaseIndex) => (
-                            <li key={phase.numeral} className="flex flex-col bg-white">
-                                <div className="relative p-7 lg:pr-10 min-h-[150px]" style={{ backgroundColor: phase.bg, color: phase.fg }}>
+                            <li key={phase.numeral} className="flex flex-col bg-white border border-[#121a2e]/10 shadow-sm">
+                                <div className="relative p-7 md:p-9" style={{ backgroundColor: phase.bg, color: phase.fg }}>
                                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-80">
                                         Phase {phase.numeral} · {phase.months}
                                     </p>
                                     <h3 className="font-cormorant font-semibold text-3xl mt-3">{phase.title}</h3>
                                     <p className="font-cormorant italic text-lg opacity-90">{phase.tagline}</p>
                                 </div>
-                                <div className="flex-1 p-7 flex flex-col">
+                                <div className="flex-1 p-7 md:p-9 flex flex-col">
                                     <p className="text-[15px] leading-relaxed text-[#121a2e]/80">{phase.text}</p>
-                                    <ul className="mt-8 pt-6 border-t border-[#121a2e]/10 space-y-3">
+                                    <ul className="mt-8 pt-6 border-t border-[#121a2e]/10 space-y-6">
                                         {phase.sessions.map((session, i) => (
-                                            <li key={session} className="flex items-baseline gap-4">
-                                                <span className="font-cormorant text-lg w-8 shrink-0" style={{ color: INK }}>S{phaseIndex * 3 + i + 1}</span>
-                                                <span className="font-cormorant text-xl leading-snug" style={{ color: NAVY }}>{session}</span>
+                                            <li key={session.title} className="flex items-baseline gap-4">
+                                                <span className="font-cormorant text-lg w-9 shrink-0" style={{ color: INK }}>S{phaseIndex * 3 + i + 1}</span>
+                                                <div>
+                                                    <h4 className="font-cormorant font-semibold text-xl leading-snug" style={{ color: NAVY }}>{session.title}</h4>
+                                                    <p className="mt-1 text-[14px] leading-relaxed text-[#121a2e]/75">{session.text}</p>
+                                                </div>
                                             </li>
                                         ))}
                                     </ul>
