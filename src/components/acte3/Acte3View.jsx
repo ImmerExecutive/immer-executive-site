@@ -59,29 +59,15 @@ function usePageMeta({ title, description }) {
 }
 
 // Symbole Immer en filigrane, cadré comme sur la couverture de la plaquette :
-// très agrandi, centré à droite et coupé par les bords.
-function Watermark() {
+// très agrandi et coupé par les bords. La taille et la position viennent de className.
+function Watermark({ className = '' }) {
     const mask = 'url(/forme-immer.svg) center / contain no-repeat';
     return (
         <div
             aria-hidden="true"
-            className="absolute aspect-square -translate-x-1/2 -translate-y-1/2 pointer-events-none w-[175vw] left-[82%] top-[40%] landscape:w-[125vh] landscape:left-[74%] landscape:top-[42%]"
+            className={`absolute aspect-square -translate-x-1/2 -translate-y-1/2 pointer-events-none ${className}`}
             style={{ backgroundColor: 'rgba(255, 255, 255, 0.08)', WebkitMask: mask, mask }}
         />
-    );
-}
-
-// Chevrons en filigrane, repris de la couverture de la plaquette.
-function Chevrons({ className = '' }) {
-    return (
-        <svg className={className} viewBox="0 0 600 800" fill="none" aria-hidden="true">
-            <g stroke="currentColor" strokeWidth="64" strokeLinecap="square">
-                <polyline points="40,160 240,360 40,560" />
-                <polyline points="240,0 440,200 240,400" />
-                <polyline points="240,440 440,640 240,840" />
-                <polyline points="420,-80 620,120 420,320" />
-            </g>
-        </svg>
     );
 }
 
@@ -128,7 +114,7 @@ export function Acte3View({ onHome, navigateToPage }) {
 
             {/* Couverture */}
             <section className="relative min-h-[100svh] flex flex-col items-center justify-center overflow-hidden px-4 sm:px-8 text-center text-white" style={{ backgroundColor: NAVY }}>
-                <Watermark />
+                <Watermark className="w-[175vw] left-[82%] top-[40%] landscape:w-[125vh] landscape:left-[74%] landscape:top-[42%]" />
                 <div className="relative z-10 max-w-3xl pt-24 pb-16">
                     <p className="font-lato text-[11px] sm:text-xs font-bold uppercase tracking-[0.3em] text-white/60 mb-14">
                         Parcours individuel de douze mois
@@ -255,7 +241,7 @@ export function Acte3View({ onHome, navigateToPage }) {
 
             {/* Directeurs */}
             <section className="relative overflow-hidden px-4 sm:px-8 py-24 md:py-32 text-white" style={{ backgroundColor: NAVY }}>
-                <Chevrons className="absolute -left-40 top-0 h-full text-white/[0.04] pointer-events-none rotate-180" />
+                <Watermark className="w-[130vw] left-[8%] top-1/2 landscape:w-auto landscape:h-[115%] landscape:left-[12%]" />
                 <div className="relative max-w-6xl mx-auto">
                     <Eyebrow light>Les directeurs du parcours</Eyebrow>
                     <div className="grid md:grid-cols-2 gap-12">
