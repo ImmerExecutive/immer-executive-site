@@ -30,7 +30,7 @@ export const ACTE3_PHASES = [
         tagline: 'Choisir de chercher',
         text: 'Écouter ce qui n\'a pas eu droit de parole. Identifier nos désirs propres, poser les fondations d\'une vie choisie.',
         sessions: [
-            { title: 'Ce que je veux, librement', text: 'Premier regard honnête sur nos désirs propres, hors de tout rôle : dirigeant, parent, époux, fils.' },
+            { title: 'Ce que je veux, librement', text: 'Premier regard honnête sur nos désirs propres, hors de tout rôle : dirigeant, conjoint, parent, enfant.' },
             { title: 'Me voir par leurs yeux', text: 'Recevoir leurs réponses, sans défense, et les travailler avec notre directeur de parcours. Se laisser surprendre par ce que les autres voient de nous.' },
             { title: 'Poser les fondations', text: 'Définir les blocs de notre vie : temps pour soi, passions, famille, amis, corps, voyages, activité, contribution, leurs priorités et nos non-négociables.' },
         ],
