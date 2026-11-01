@@ -1,43 +1,24 @@
 import React from 'react';
-import { ChevronRight, Linkedin } from 'lucide-react';
 import { ValueCard } from './ValueCard';
+import { Hero } from './Hero';
+import { Axes } from './Axes';
 import { ContactSection } from '../contact/ContactSection';
-import { Icon } from '../common/Icon';
 
 export function HomeView({ services, partners, onNavigatePrestation }) {
-    const navigateToContact = () => {
-        const el = document.getElementById('contact-section');
+    const scrollToSection = (id) => {
+        const el = document.getElementById(id);
         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
+    const navigateToContact = () => scrollToSection('contact-section');
 
     return (
-        <div className="animate-in fade-in duration-1000">
-            {/* Hero */}
-            <section className="relative max-w-7xl mx-auto px-8 pt-32 pb-24 border-b border-gray-100">
-                {/* Filigrane — clippage indépendant pour ne pas affecter le texte */}
-                <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
-                    <img
-                        src="/forme-immer.svg"
-                        className="absolute -right-32 top-1/2 -translate-y-1/2 w-[520px] opacity-[0.06] select-none"
-                        style={{ filter: 'blur(1px)' }}
-                    />
-                </div>
-                <h1 className="relative text-5xl sm:text-6xl md:text-8xl font-playfair mb-12 leading-[1.1] tracking-tight text-[#01001e]">
-                    Renforcer les organisations <br /> dans la durée.
-                </h1>
-                <div className="relative max-w-2xl border-l-2 border-[#0000a3] pl-6">
-                    <p className="text-lg text-[#01001e]/75 leading-relaxed font-light">
-                        Immer Executive est depuis près de dix ans un cabinet de conseil et de chasse de tête en France et à l'international.
-                        Nous intervenons dans le cadre d'une relation bilatérale aux côtés du dirigeant pour renforcer les organisations dans les situations qui les engagent durablement.
-                    </p>
-                </div>
-            </section>
+        <div className="font-lato text-bleu-nuit">
+            <Hero onDiscover={() => scrollToSection('services-axes')} onContact={navigateToContact} />
 
             {/* Valeurs */}
-            <div className="bg-gray-50 border-b border-gray-100">
-            <section id="valeurs-section" className="max-w-7xl mx-auto px-8 py-32 scroll-mt-20">
-                <h2 className="text-5xl font-playfair mb-20 text-[#01001e]">Posture & Valeurs</h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
+            <section id="valeurs-section" className="max-w-7xl mx-auto px-4 sm:px-8 py-24 md:py-32 scroll-mt-20">
+                <h2 className="font-cormorant font-semibold text-4xl md:text-5xl leading-tight mb-16 max-w-3xl">Posture & Valeurs</h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16">
                     <ValueCard
                         title="Confiance"
                         subtitle="La confiance n'est pas un climat. Elle est une solidité."
@@ -55,73 +36,14 @@ export function HomeView({ services, partners, onNavigatePrestation }) {
                     />
                 </div>
             </section>
-            </div>
 
-            {/* Services Grid */}
-            <section id="services-axes" className="max-w-7xl mx-auto px-4 md:px-8 py-32 bg-[#01001e] text-white scroll-mt-20 rounded-sm">
-                <div className="max-w-2xl mb-20">
-                    <h2 className="text-5xl font-playfair mb-6 leading-tight">Nos cinq axes <br /> d'intervention</h2>
-                    <p className="text-gray-400 font-light tracking-wide">Des solutions sur-mesure pour chaque niveau de l'organisation dirigeante.</p>
-                </div>
-                {/* Ligne 1 : 3 axes */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-                    {services.slice(0, 3).map((axe) => (
-                        <div key={axe.id} className="group flex flex-col bg-white text-[#01001e] border border-white/10 p-8 hover:border-[#0000a3]/30 transition-all duration-300 rounded-sm">
-                            <div className="text-[#0000a3] mb-6">
-                                <Icon name={axe.iconName} className="w-6 h-6" />
-                            </div>
-                            <h3 className="text-lg font-bold uppercase tracking-tight mb-4 md:min-h-[3.5rem] border-b border-[#01001e]/10 pb-2">{axe.title}</h3>
-                            <p className="text-sm text-gray-600 mb-8 leading-relaxed line-clamp-3 font-light md:min-h-[5rem]">{axe.description}</p>
-                            <div className="pt-6 border-t border-[#01001e]/10 mt-auto">
-                                <ul className="flex flex-col gap-1 mb-6">
-                                    {axe.items.map((item) => (
-                                        <li key={item.id} className="text-[11px] uppercase tracking-widest text-[#01001e]/40 font-semibold">{item.label}</li>
-                                    ))}
-                                </ul>
-                                <button
-                                    onClick={() => onNavigatePrestation(axe.id)}
-                                    className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-[#0000a3] hover:text-[#01001e] transition-colors group/cta"
-                                >
-                                    En savoir plus
-                                    <ChevronRight className="w-3 h-3 transition-transform group-hover/cta:translate-x-1" />
-                                </button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-                {/* Ligne 2 : 2 axes centrés */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:w-2/3 mx-auto">
-                    {services.slice(3).map((axe) => (
-                        <div key={axe.id} className="group flex flex-col bg-white text-[#01001e] border border-white/10 p-8 hover:border-[#0000a3]/30 transition-all duration-300 rounded-sm">
-                            <div className="text-[#0000a3] mb-6">
-                                <Icon name={axe.iconName} className="w-6 h-6" />
-                            </div>
-                            <h3 className="text-lg font-bold uppercase tracking-tight mb-4 md:min-h-[3.5rem] border-b border-[#01001e]/10 pb-2">{axe.title}</h3>
-                            <p className="text-sm text-gray-600 mb-8 leading-relaxed line-clamp-3 font-light md:min-h-[5rem]">{axe.description}</p>
-                            <div className="pt-6 border-t border-[#01001e]/10 mt-auto">
-                                <ul className="flex flex-col gap-1 mb-6">
-                                    {axe.items.map((item) => (
-                                        <li key={item.id} className="text-[11px] uppercase tracking-widest text-[#01001e]/40 font-semibold">{item.label}</li>
-                                    ))}
-                                </ul>
-                                <button
-                                    onClick={() => onNavigatePrestation(axe.id)}
-                                    className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-[#0000a3] hover:text-[#01001e] transition-colors group/cta"
-                                >
-                                    En savoir plus
-                                    <ChevronRight className="w-3 h-3 transition-transform group-hover/cta:translate-x-1" />
-                                </button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </section>
+            <Axes services={services} onNavigate={onNavigatePrestation} />
 
             {/* Équipe */}
-            <section id="equipe-section" className="max-w-7xl mx-auto px-8 py-32 scroll-mt-20">
-                <div className="max-w-3xl mb-20">
-                    <h2 className="text-5xl font-playfair mb-8 text-[#01001e]">Un collectif engagé</h2>
-                    <p className="text-[#01001e]/80 leading-relaxed font-light">
+            <section id="equipe-section" className="max-w-7xl mx-auto px-4 sm:px-8 py-24 md:py-32 scroll-mt-20">
+                <div className="max-w-3xl mb-16">
+                    <h2 className="font-cormorant font-semibold text-4xl md:text-5xl leading-tight mb-6">Un collectif engagé</h2>
+                    <p className="text-lg leading-[1.7] text-bleu-nuit/80">
                         Nos expertises sont complémentaires. Nous sommes unis par la manière de travailler ensemble : parole franche, confiance, responsabilité.
                     </p>
                 </div>
@@ -136,35 +58,30 @@ export function HomeView({ services, partners, onNavigatePrestation }) {
                     return (
                         <div key={category} className="mb-16 last:mb-0">
                             <div className="flex items-center gap-6 mb-10">
-                                <span className="text-sm font-bold uppercase tracking-[0.3em] text-gray-500 whitespace-nowrap">{label}</span>
-                                <div className="h-[1px] flex-1 bg-gray-100" />
+                                <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-bleu-immer whitespace-nowrap">{label}</span>
+                                <div className="h-px flex-1 bg-poudre" />
                             </div>
-                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-6 gap-y-10">
-                                {group.map((p, i) => (
-                                    <div key={i} className="group">
-                                        <div className="aspect-square bg-gray-50 flex items-center justify-center border border-gray-100 mb-4 rounded-sm overflow-hidden relative">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-6 gap-y-12">
+                                {group.map((p) => (
+                                    <div key={p.name}>
+                                        <div className="aspect-square bg-ivoire flex items-center justify-center mb-5 overflow-hidden">
                                             {p.photo ? (
-                                                <img
-                                                    src={p.photo}
-                                                    alt={p.name}
-                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                                />
+                                                <img src={p.photo} alt={p.name} loading="lazy" className="w-full h-full object-cover grayscale-[30%]" />
                                             ) : (
-                                                <span className="text-[#01001e]/10 font-playfair text-5xl select-none">{p.initial}</span>
+                                                <span className="font-cormorant text-5xl text-bleu-immer/20 select-none">{p.initial}</span>
                                             )}
-                                            <div className="absolute inset-0 bg-[#01001e] opacity-0 group-hover:opacity-10 transition-opacity" />
                                         </div>
-                                        <h4 className="text-xs font-bold uppercase tracking-[0.15em] mb-1 text-[#01001e] leading-tight">{p.name}</h4>
-                                        <p className="text-xs text-gray-500 uppercase tracking-wider leading-tight mb-2">{p.role}</p>
+                                        <h4 className="font-cormorant font-semibold text-xl leading-tight text-bleu-nuit">{p.name}</h4>
+                                        <p className="mt-1 text-[13px] leading-snug text-bleu-nuit/60">{p.role}</p>
                                         {p.linkedin && (
                                             <a
                                                 href={p.linkedin}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="inline-block text-gray-300 hover:text-[#0000a3] transition-colors"
+                                                className="inline-block mt-3 text-[10px] font-bold uppercase tracking-[0.2em] text-bleu-immer hover:text-bleu-nuit transition-colors duration-200"
                                                 aria-label={`LinkedIn de ${p.name}`}
                                             >
-                                                <Linkedin className="w-3 h-3" />
+                                                LinkedIn
                                             </a>
                                         )}
                                     </div>
@@ -173,10 +90,10 @@ export function HomeView({ services, partners, onNavigatePrestation }) {
                         </div>
                     );
                 })}
-                <div className="mt-16 flex justify-center">
+                <div className="mt-20">
                     <button
                         onClick={navigateToContact}
-                        className="text-[10px] uppercase tracking-widest text-gray-500 hover:text-[#01001e] font-bold transition-colors border-b border-gray-200 hover:border-[#01001e] pb-1"
+                        className="w-full sm:w-auto px-8 py-4 text-[10px] font-bold uppercase tracking-[0.25em] border border-bleu-immer text-bleu-immer hover:bg-bleu-immer hover:text-white transition-colors duration-200"
                     >
                         Prendre contact avec l'équipe
                     </button>

@@ -17,6 +17,12 @@ export default {
         'immer-light': '#0000a3',
         'soft-gray': '#f8f8f8',
         'line-gray': '#e5e5e5',
+        // Design system IMMER v2
+        'bleu-immer': '#1A3870',
+        'bleu-nuit': '#0F1A2E',
+        'poudre': '#D9E3EF',
+        'ivoire': '#F4F6F9',
+        'bordeaux': '#6B1E2A',
       }
     },
   },

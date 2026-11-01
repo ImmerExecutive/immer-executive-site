@@ -9,7 +9,7 @@ export const SERVICES_DATA = [
             { id: 'coaching', label: 'Coaching individuel', contactOnly: true },
             { id: 'conseil-strategique', label: 'Conseil stratégique', contactOnly: true },
             { id: 'mediation', label: 'Médiation d\'associés' },
-            { id: 'acte3', label: 'ACTE III — La liberté, Pour quoi faire ?' }
+            { id: 'acte3', label: 'Acte III · La liberté ? Pour quoi faire ?' }
         ]
     },
     {

@@ -97,8 +97,8 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#fcfcfc]">
-        <div className="animate-pulse text-[#01001e] font-playfair text-2xl">
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="text-bleu-nuit font-cormorant text-2xl">
           Immer Executive...
         </div>
       </div>
@@ -106,7 +106,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#fcfcfc] text-[#01001e] font-['Hind',sans-serif] selection:bg-[#01001e] selection:text-white overflow-x-hidden pt-24">
+    <div className="min-h-screen bg-white text-bleu-nuit font-lato selection:bg-bleu-nuit selection:text-white overflow-x-hidden pt-24">
       <Header
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
