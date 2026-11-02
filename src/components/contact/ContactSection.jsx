@@ -21,7 +21,7 @@ function CandidateTile({ href, external, title, text }) {
 }
 
 export function ContactSection() {
-    const [form, setForm] = useState({ name: '', email: '', message: '' });
+    const [form, setForm] = useState({ name: '', email: '', message: '', website: '' });
     const [status, setStatus] = useState('idle'); // idle | loading | success | error
     const [errorMsg, setErrorMsg] = useState('');
 
@@ -42,7 +42,7 @@ export function ContactSection() {
             const data = await res.json();
             if (res.ok) {
                 setStatus('success');
-                setForm({ name: '', email: '', message: '' });
+                setForm({ name: '', email: '', message: '', website: '' });
             } else {
                 setStatus('error');
                 setErrorMsg(data.error || 'Une erreur est survenue.');
@@ -79,6 +79,8 @@ export function ContactSection() {
                         </div>
                     ) : (
                         <form onSubmit={handleSubmit} className="space-y-10">
+                            {/* Champ piège invisible pour écarter les robots */}
+                            <input type="text" name="website" value={form.website} onChange={handleChange} tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" />
                             <div className="grid md:grid-cols-2 gap-8">
                                 <div className="space-y-2">
                                     <label htmlFor="contact-name" className={FIELD_LABEL}>Nom complet</label>
