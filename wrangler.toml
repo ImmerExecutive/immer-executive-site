@@ -6,4 +6,18 @@ compatibility_date = "2024-09-23"
 directory = "./dist"
 binding = "ASSETS"
 not_found_handling = "single-page-application"
-run_worker_first = ["/api/*"]
+# Le Worker passe en premier partout : il distingue le site principal
+# de survey.immer-executive.com, puis délègue les fichiers statiques.
+run_worker_first = true
+
+# Base des sondages (survey.immer-executive.com).
+# Créer la base : npx wrangler d1 create immer-survey, puis reporter son identifiant ici.
+[[d1_databases]]
+binding = "SURVEY_DB"
+database_name = "immer-survey"
+database_id = "A_RENSEIGNER"
+migrations_dir = "migrations"
+
+# Suppression quotidienne des sondages sans action depuis 60 jours (4 h 17 UTC).
+[triggers]
+crons = ["17 4 * * *"]
