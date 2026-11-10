@@ -4,7 +4,7 @@
 const RETENTION_DAYS = 60;
 const SESSION_DAYS = 30;
 const COOKIE = 'immer_survey';
-const MAIL_FROM = 'IMMER Executive · Sondages <contact@immer-executive.com>';
+const MAIL_FROM = 'Immer Executive · Sondages <contact@immer-executive.com>';
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const DAY_RE = /^\d{4}-\d{2}-\d{2}$/;
 const ID_CHARS = 'abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';
