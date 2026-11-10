@@ -1,13 +1,25 @@
-// Worker du site : traite le formulaire de contact (/api/contact)
+// Worker du site : traite le formulaire de contact (/api/contact),
+// sert l'outil de sondage sur survey.immer-executive.com
 // et laisse les fichiers statiques du site à la configuration [assets].
+
+import { handleSurvey, isSurveyHost, purgeExpired } from './survey.js';
 
 const CONTACT_TO = 'contact@immer-executive.com';
 const CONTACT_FROM = 'Site Immer Executive <contact@immer-executive.com>';
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default {
-    async fetch(request, env) {
+    async fetch(request, env, ctx) {
         const url = new URL(request.url);
+
+        if (isSurveyHost(url, env)) {
+            return handleSurvey(request, env, ctx);
+        }
+
+        // L'application de sondage ne s'ouvre que sur son sous-domaine.
+        if (url.pathname === '/survey' || url.pathname.startsWith('/survey/')) {
+            return Response.redirect('https://survey.immer-executive.com/', 302);
+        }
 
         if (url.pathname === '/api/contact') {
             if (request.method !== 'POST') {
@@ -17,6 +29,11 @@ export default {
         }
 
         return env.ASSETS.fetch(request);
+    },
+
+    // Tâche quotidienne : suppression des sondages inactifs depuis 60 jours.
+    async scheduled(event, env, ctx) {
+        if (env.SURVEY_DB) ctx.waitUntil(purgeExpired(env));
     },
 };
 
