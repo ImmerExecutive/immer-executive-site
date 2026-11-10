@@ -42,7 +42,7 @@ export default function App() {
 
     useEffect(() => {
         const titles = { list: 'Tous les sondages', create: 'Nouveau sondage', login: 'Espace équipe' };
-        if (titles[route.page]) document.title = `${titles[route.page]} · IMMER Executive`;
+        if (titles[route.page]) document.title = `${titles[route.page]} · Immer Executive`;
     }, [route]);
 
     const logout = async () => {

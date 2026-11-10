@@ -47,7 +47,7 @@ export default function PollPage({ id, team, navigate, notify }) {
 
     useEffect(() => {
         api.getPoll(id)
-            .then(({ poll: p }) => { setPoll(p); document.title = `${p.title} · IMMER Executive`; })
+            .then(({ poll: p }) => { setPoll(p); document.title = `${p.title} · Immer Executive`; })
             .catch(err => setError(err.message));
     }, [id]);
 
@@ -193,7 +193,7 @@ export default function PollPage({ id, team, navigate, notify }) {
                     <div className="poll-meta">
                         {poll.place && <span><b>Lieu</b> · {poll.place}</span>}
                         {poll.duration && <span><b>Durée</b> · {duration(poll.duration)}</span>}
-                        <span><b>Organisé par</b> · {poll.organizerName}, IMMER Executive</span>
+                        <span><b>Organisé par</b> · {poll.organizerName}, Immer Executive</span>
                         {poll.limit && <span><b>{poll.limit} participant{poll.limit > 1 ? 's' : ''} maximum</b> par {noun}</span>}
                     </div>
                 </div>
