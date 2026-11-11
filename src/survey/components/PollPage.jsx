@@ -2,6 +2,7 @@ import { Fragment, useEffect, useState } from 'react';
 import { api } from '../api.js';
 import { DAYS, MONTHS, duration, optionLong, optionShort, parseDay, pollUrl, slotRange } from '../format.js';
 import { copyText } from './copy.js';
+import InterviewPage from './InterviewPage.jsx';
 
 const LABELS = { y: 'Oui', m: 'Si nécessaire', n: 'Non' };
 const GLYPHS = { y: '✓', m: '(✓)', n: '' };
@@ -61,6 +62,7 @@ export default function PollPage({ id, team, navigate, notify }) {
         );
     }
     if (!poll) return <p className="muted">Chargement du sondage…</p>;
+    if (poll.type === 'entretien') return <InterviewPage poll={poll} setPoll={setPoll} team={team} navigate={navigate} notify={notify} />;
 
     const options = poll.options;
     const closed = !!poll.closedOptionId;

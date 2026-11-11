@@ -18,7 +18,7 @@ function rememberedOrganizer() {
 function blank() {
     const who = rememberedOrganizer();
     return {
-        type: 'reunion', title: '', place: '', organizerName: who.name || '', organizerEmail: who.email || '',
+        type: 'reunion', title: '', place: '', description: '', organizerName: who.name || '', organizerEmail: who.email || '',
         allowMaybe: true, limitOn: false, limit: 1, slots: [], labels: ['', ''],
     };
 }
@@ -38,10 +38,11 @@ export default function CreatePoll({ from, navigate, notify }) {
                 type: poll.type,
                 title: `${poll.title} (copie)`,
                 place: poll.place,
+                description: poll.description || '',
                 allowMaybe: poll.allowMaybe,
                 limitOn: !!poll.limit,
                 limit: poll.limit || 1,
-                slots: poll.type === 'reunion' ? poll.options.map(({ kind, day, start, end }) => (kind === 'day' ? { kind, day } : { kind, day, start, end })) : [],
+                slots: poll.type !== 'choix' ? poll.options.map(({ kind, day, start, end }) => (kind === 'day' ? { kind, day } : { kind, day, start, end })) : [],
                 labels: poll.type === 'choix' ? poll.options.map(o => o.label) : ['', ''],
             }));
         }).catch(err => setError(err.message)).finally(() => setLoading(false));
@@ -49,15 +50,17 @@ export default function CreatePoll({ from, navigate, notify }) {
 
     const set = (patch) => setF(cur => ({ ...cur, ...patch }));
     const maybeLocked = f.limitOn && Number(f.limit) === 1;
+    const interview = f.type === 'entretien';
+    const usesSlots = f.type !== 'choix';
 
     const submit = async () => {
         const today = dayKey(new Date());
-        const options = f.type === 'reunion' ? f.slots : f.labels.map(l => l.trim()).filter(Boolean).map(label => ({ label }));
+        const options = usesSlots ? f.slots : f.labels.map(l => l.trim()).filter(Boolean).map(label => ({ label }));
         const msg = !f.title.trim() ? 'Indiquez un titre.'
             : !f.organizerName.trim() ? 'Indiquez votre nom.'
                 : !EMAIL_RE.test(f.organizerEmail.trim()) ? 'Indiquez votre email pour recevoir les réponses.'
-                    : options.length < 2 ? `Proposez au moins deux ${f.type === 'reunion' ? 'créneaux' : 'options'}.`
-                        : f.type === 'reunion' && f.slots.some(s => s.day < today) ? 'Retirez les créneaux passés.'
+                    : options.length < (interview ? 1 : 2) ? (interview ? 'Proposez au moins un créneau.' : `Proposez au moins deux ${usesSlots ? 'créneaux' : 'options'}.`)
+                        : usesSlots && f.slots.some(s => s.day < today) ? 'Retirez les créneaux passés.'
                             : '';
         if (msg) return setError(msg);
         setError('');
@@ -67,6 +70,7 @@ export default function CreatePoll({ from, navigate, notify }) {
                 type: f.type,
                 title: f.title,
                 place: f.place,
+                description: interview ? f.description : '',
                 organizerName: f.organizerName,
                 organizerEmail: f.organizerEmail.trim(),
                 allowMaybe: f.allowMaybe && !maybeLocked,
@@ -96,12 +100,14 @@ export default function CreatePoll({ from, navigate, notify }) {
             <>
                 <div className="head"><div><p className="libelle">Sondage créé</p><h1 style={{ marginTop: 8 }}>{f.title}</h1><div className="filet" /></div></div>
                 <div className="done">
-                    <p>Transmettez ce lien aux participants. Il est le même pour tous : chacun saisit son nom et indique ses réponses.</p>
+                    <p>{interview
+                        ? 'Transmettez ce lien aux candidats. Il est le même pour tous : chacun ne voit que les créneaux encore libres et réserve le sien.'
+                        : 'Transmettez ce lien aux participants. Il est le même pour tous : chacun saisit son nom et indique ses réponses.'}</p>
                     <div className="copyline">
                         <code>{url}</code>
                         <button type="button" className="btn" onClick={async () => notify((await copyText(url)) ? 'Lien copié' : 'Sélectionnez le lien pour le copier')}>Copier le lien</button>
                     </div>
-                    <p className="hint">Chaque réponse vous sera notifiée à {f.organizerEmail}.</p>
+                    <p className="hint">{interview ? 'Chaque réservation' : 'Chaque réponse'} vous sera notifiée à {f.organizerEmail}.</p>
                     <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', alignItems: 'center' }}>
                         <a className="btn ghost small" href={`/s/${created}`} onClick={go(`/s/${created}`)}>Ouvrir le sondage</a>
                         <a className="link" href="/" onClick={go('/')}>Revenir à la liste</a>
@@ -126,20 +132,30 @@ export default function CreatePoll({ from, navigate, notify }) {
                 <div className="col">
                     <div className="field">
                         <span className="lbl">Objet du sondage</span>
-                        <div className="seg" role="group" aria-label="Objet du sondage">
+                        <div className="seg seg3" role="group" aria-label="Objet du sondage">
                             <button type="button" aria-pressed={f.type === 'reunion'} onClick={() => set({ type: 'reunion' })}>Réunion à planifier</button>
                             <button type="button" aria-pressed={f.type === 'choix'} onClick={() => set({ type: 'choix' })}>Choix à faire</button>
+                            <button type="button" aria-pressed={interview} onClick={() => set({ type: 'entretien' })}>Entretien candidat</button>
                         </div>
+                        {interview && <span className="hint">Chaque créneau est réservé par un seul candidat. Les candidats ne voient ni les autres candidats, ni les créneaux déjà pris.</span>}
                     </div>
                     <div className="field">
                         <label htmlFor="f-title">Titre</label>
                         <input id="f-title" type="text" maxLength={200} value={f.title} onChange={e => set({ title: e.target.value })}
-                            placeholder={f.type === 'reunion' ? 'Comité de sélection · Directeur commercial France' : 'Lieu du séminaire de direction'} />
+                            placeholder={interview ? 'Entretiens finalistes · Directeur administratif et financier' : f.type === 'reunion' ? 'Comité de sélection · Directeur commercial France' : 'Lieu du séminaire de direction'} />
                     </div>
-                    {f.type === 'reunion' && (
+                    {usesSlots && (
                         <div className="field">
                             <label htmlFor="f-place">Lieu</label>
                             <input id="f-place" type="text" maxLength={200} value={f.place} onChange={e => set({ place: e.target.value })} placeholder="66 avenue des Champs-Élysées, Paris 8e" />
+                        </div>
+                    )}
+                    {interview && (
+                        <div className="field">
+                            <label htmlFor="f-desc">Description</label>
+                            <textarea id="f-desc" maxLength={2000} rows={5} value={f.description} onChange={e => set({ description: e.target.value })}
+                                placeholder="Personnes rencontrées, déroulé, consignes d’accueil…" />
+                            <span className="hint">Affichée aux candidats au-dessus des créneaux et reprise dans leur email de confirmation.</span>
                         </div>
                     )}
                     <div className="field">
@@ -150,9 +166,9 @@ export default function CreatePoll({ from, navigate, notify }) {
                     <div className="field">
                         <label htmlFor="f-email">Votre email</label>
                         <input id="f-email" type="email" maxLength={200} value={f.organizerEmail} onChange={e => set({ organizerEmail: e.target.value })} placeholder="prenom.nom@immer-executive.com" autoComplete="email" />
-                        <span className="hint">Vous recevrez un email à chaque nouvelle réponse, modification ou suppression.</span>
+                        <span className="hint">{interview ? 'Vous recevrez un email à chaque réservation.' : 'Vous recevrez un email à chaque nouvelle réponse, modification ou suppression.'}</span>
                     </div>
-                    <div className="field">
+                    {!interview && <div className="field">
                         <span className="lbl">Réponses</span>
                         <label className="check">
                             <input type="checkbox" checked={f.limitOn} onChange={e => set({ limitOn: e.target.checked })} />
@@ -170,11 +186,11 @@ export default function CreatePoll({ from, navigate, notify }) {
                             <span>Autoriser la réponse « si nécessaire »</span>
                         </label>
                         {maybeLocked && <div className="box">Avec un seul participant par {f.type === 'reunion' ? 'créneau' : 'option'}, la réponse « si nécessaire » n’est pas proposée.</div>}
-                    </div>
+                    </div>}
                 </div>
 
                 <div className="col">
-                    {f.type === 'reunion' ? (
+                    {usesSlots ? (
                         <WeekCalendar slots={f.slots} onChange={slots => set({ slots })} />
                     ) : (
                         <div className="field">

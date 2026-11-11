@@ -38,4 +38,10 @@ export const api = {
     addResponse: (id, response) => call('POST', `/polls/${encodeURIComponent(id)}/responses`, response),
     updateResponse: (id, rid, response) => call('PUT', `/polls/${encodeURIComponent(id)}/responses/${encodeURIComponent(rid)}`, response),
     deleteResponse: (id, rid) => call('DELETE', `/polls/${encodeURIComponent(id)}/responses/${encodeURIComponent(rid)}`),
+    // Entretien candidat
+    book: (id, booking) => call('POST', `/polls/${encodeURIComponent(id)}/bookings`, booking),
+    releaseBooking: (id, bid) => call('DELETE', `/polls/${encodeURIComponent(id)}/bookings/${encodeURIComponent(bid)}`),
+    addSlot: (id, slot) => call('POST', `/polls/${encodeURIComponent(id)}/options`, slot),
+    updateSlot: (id, oid, slot) => call('PUT', `/polls/${encodeURIComponent(id)}/options/${encodeURIComponent(oid)}`, slot),
+    deleteSlot: (id, oid) => call('DELETE', `/polls/${encodeURIComponent(id)}/options/${encodeURIComponent(oid)}`),
 };

@@ -82,6 +82,17 @@ async function handleApi(request, env, ctx, url) {
     if (sub === 'close' && method === 'POST') return closePoll(request, env, pollId, requireTeam(team));
     if (sub === 'reopen' && method === 'POST') return reopenPoll(env, pollId, requireTeam(team));
 
+    // Entretien candidat : réservations et gestion des créneaux.
+    if (sub === 'bookings') {
+        if (!subId && method === 'POST') return createBooking(request, env, ctx, pollId, team);
+        if (subId && method === 'DELETE') return releaseBooking(env, ctx, pollId, subId, requireTeam(team));
+    }
+    if (sub === 'options') {
+        if (!subId && method === 'POST') return addOption(request, env, pollId, requireTeam(team));
+        if (subId && method === 'PUT') return updateOption(request, env, ctx, pollId, subId, requireTeam(team));
+        if (subId && method === 'DELETE') return removeOption(env, ctx, pollId, subId, requireTeam(team));
+    }
+
     if (sub === 'responses') {
         if (!subId && method === 'POST') return saveResponse(request, env, ctx, pollId, null, team);
         if (subId && method === 'PUT') return saveResponse(request, env, ctx, pollId, subId, team);
@@ -150,7 +161,9 @@ async function safeEqual(a, b) {
 async function listPolls(env) {
     await purgeExpired(env);
     const { results } = await env.SURVEY_DB.prepare(`
-        SELECT p.*, (SELECT COUNT(*) FROM poll_responses r WHERE r.poll_id = p.id) AS response_count
+        SELECT p.*,
+            (SELECT COUNT(*) FROM poll_responses r WHERE r.poll_id = p.id) AS response_count,
+            (SELECT COUNT(*) FROM poll_options o WHERE o.poll_id = p.id) AS option_count
         FROM polls p ORDER BY p.last_action_at DESC
     `).all();
     const closedIds = results.map(p => p.closed_option).filter(Boolean);
@@ -171,12 +184,14 @@ async function listPolls(env) {
         retentionDays: RETENTION_DAYS,
         polls: results.map(p => ({
             id: p.id,
-            type: p.type,
+            type: publicType(p),
             title: p.title,
             organizerName: p.organizer_name,
             allowMaybe: !!p.allow_maybe,
             limit: p.slot_limit,
             responseCount: p.response_count,
+            optionCount: p.option_count,
+            closed: isClosed(p),
             createdAt: p.created_at,
             lastActionAt: p.last_action_at,
             duration: commonDuration(byPoll[p.id] || []),
@@ -187,13 +202,16 @@ async function listPolls(env) {
 
 async function createPoll(request, env) {
     const b = await readJson(request);
+    const interview = b.type === 'entretien';
     const type = b.type === 'choix' ? 'choix' : 'reunion';
     const title = text(b.title, 200);
     const place = type === 'reunion' ? text(b.place, 200) : '';
+    const description = interview ? multiline(b.description, 2000) : '';
     const organizerName = text(b.organizerName, 100);
     const organizerEmail = text(b.organizerEmail, 200);
-    const limit = b.limit == null || b.limit === '' ? null : Math.floor(Number(b.limit));
-    const allowMaybe = !!b.allowMaybe && limit !== 1;
+    // Un entretien : un candidat par créneau, sans « si nécessaire ».
+    const limit = interview ? 1 : b.limit == null || b.limit === '' ? null : Math.floor(Number(b.limit));
+    const allowMaybe = !interview && !!b.allowMaybe && limit !== 1;
 
     if (!title) throw new HttpError(400, 'Indiquez un titre.');
     if (!organizerName) throw new HttpError(400, 'Indiquez votre nom.');
@@ -222,7 +240,9 @@ async function createPoll(request, env) {
         seen.add(key);
         options.push(opt);
     }
-    if (options.length < 2) throw new HttpError(400, type === 'choix' ? 'Proposez au moins deux options.' : 'Proposez au moins deux créneaux.');
+    if (options.length < (interview ? 1 : 2)) {
+        throw new HttpError(400, type === 'choix' ? 'Proposez au moins deux options.' : interview ? 'Proposez au moins un créneau.' : 'Proposez au moins deux créneaux.');
+    }
     if (options.length > 80) throw new HttpError(400, 'Un sondage est limité à 80 créneaux.');
 
     if (type === 'reunion') {
@@ -234,8 +254,8 @@ async function createPoll(request, env) {
     const id = randomId(10);
     const now = new Date().toISOString();
     const stmts = [
-        env.SURVEY_DB.prepare(`INSERT INTO polls (id, type, title, place, organizer_name, organizer_email, allow_maybe, slot_limit, created_at, last_action_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).bind(id, type, title, place, organizerName, organizerEmail, allowMaybe ? 1 : 0, limit, now, now),
+        env.SURVEY_DB.prepare(`INSERT INTO polls (id, type, mode, title, place, description, organizer_name, organizer_email, allow_maybe, slot_limit, created_at, last_action_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).bind(id, type, interview ? 'entretien' : 'vote', title, place, description, organizerName, organizerEmail, allowMaybe ? 1 : 0, limit, now, now),
         ...options.map((o, i) => env.SURVEY_DB.prepare(`INSERT INTO poll_options (id, poll_id, position, kind, day, start_min, end_min, label)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`).bind(randomId(12), id, i, o.kind, o.day, o.start_min, o.end_min, o.label)),
     ];
@@ -244,7 +264,11 @@ async function createPoll(request, env) {
 }
 
 async function closePoll(request, env, pollId) {
-    await getPollRow(env, pollId);
+    const row = await getPollRow(env, pollId);
+    if (row.mode === 'entretien') {
+        await env.SURVEY_DB.prepare('UPDATE polls SET closed_at = ?, last_action_at = ? WHERE id = ?').bind(new Date().toISOString(), new Date().toISOString(), pollId).run();
+        return json(await loadPoll(env, pollId, true));
+    }
     const { optionId } = await readJson(request);
     const opt = await env.SURVEY_DB.prepare('SELECT id FROM poll_options WHERE id = ? AND poll_id = ?').bind(String(optionId || ''), pollId).first();
     if (!opt) throw new HttpError(400, 'Choisissez le créneau retenu.');
@@ -254,7 +278,7 @@ async function closePoll(request, env, pollId) {
 
 async function reopenPoll(env, pollId) {
     await getPollRow(env, pollId);
-    await env.SURVEY_DB.prepare('UPDATE polls SET closed_option = NULL, last_action_at = ? WHERE id = ?').bind(new Date().toISOString(), pollId).run();
+    await env.SURVEY_DB.prepare('UPDATE polls SET closed_option = NULL, closed_at = NULL, last_action_at = ? WHERE id = ?').bind(new Date().toISOString(), pollId).run();
     return json(await loadPoll(env, pollId, true));
 }
 
@@ -274,6 +298,7 @@ async function getPollRow(env, id) {
 
 async function loadPoll(env, id, team) {
     const poll = await getPollRow(env, id);
+    if (poll.mode === 'entretien') return loadInterview(env, poll, team);
     const [opts, resp] = await env.SURVEY_DB.batch([
         env.SURVEY_DB.prepare('SELECT * FROM poll_options WHERE poll_id = ? ORDER BY position').bind(id),
         env.SURVEY_DB.prepare('SELECT * FROM poll_responses WHERE poll_id = ? ORDER BY created_at, id').bind(id),
@@ -304,6 +329,7 @@ async function loadPoll(env, id, team) {
 
 async function saveResponse(request, env, ctx, pollId, responseId, team) {
     const poll = await getPollRow(env, pollId);
+    if (poll.mode === 'entretien') throw new HttpError(400, 'Ce sondage se réserve créneau par créneau.');
     if (poll.closed_option) throw new HttpError(409, 'Ce sondage est clôturé : les réponses ne peuvent plus être modifiées.');
     const b = await readJson(request);
     const name = text(b.name, 100);
@@ -350,6 +376,7 @@ async function saveResponse(request, env, ctx, pollId, responseId, team) {
 
 async function deleteResponse(env, ctx, pollId, responseId, team) {
     const poll = await getPollRow(env, pollId);
+    if (poll.mode === 'entretien') throw new HttpError(400, 'Utilisez « Libérer » pour annuler une réservation.');
     if (poll.closed_option) throw new HttpError(409, 'Ce sondage est clôturé : les réponses ne peuvent plus être modifiées.');
     const row = await env.SURVEY_DB.prepare('SELECT name FROM poll_responses WHERE id = ? AND poll_id = ?').bind(responseId, pollId).first();
     if (!row) throw new HttpError(404, 'Cette réponse a déjà été supprimée.');
@@ -420,6 +447,377 @@ function bestOption(poll) {
     return best;
 }
 
+/* ------------------------------------------------- Entretien candidat */
+
+const DAYS_LONG = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
+const MONTHS_LONG = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+const PHONE_RE = /^[+0-9 ().-]{6,40}$/;
+
+function sortSlots(list) {
+    const rank = o => (o.kind === 'day' ? -1 : o.start_min);
+    return list.slice().sort((a, b) => a.day.localeCompare(b.day) || rank(a) - rank(b));
+}
+
+// Date du jour à Paris, au format AAAA-MM-JJ.
+function parisToday() {
+    return new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+}
+
+async function loadInterview(env, poll, team) {
+    const [opts, resp] = await env.SURVEY_DB.batch([
+        env.SURVEY_DB.prepare('SELECT * FROM poll_options WHERE poll_id = ?').bind(poll.id),
+        env.SURVEY_DB.prepare('SELECT * FROM poll_responses WHERE poll_id = ? AND option_id IS NOT NULL').bind(poll.id),
+    ]);
+    const options = sortSlots(opts.results);
+    const byOption = Object.fromEntries(resp.results.map(r => [r.option_id, r]));
+    const closed = isClosed(poll);
+    const base = {
+        id: poll.id,
+        type: 'entretien',
+        title: poll.title,
+        place: poll.place,
+        description: poll.description,
+        organizerName: poll.organizer_name,
+        duration: commonDuration(options),
+        closed,
+        lastActionAt: poll.last_action_at,
+    };
+    if (team) {
+        return {
+            team,
+            retentionDays: RETENTION_DAYS,
+            poll: {
+                ...base,
+                organizerEmail: poll.organizer_email,
+                options: options.map(o => {
+                    const b = byOption[o.id];
+                    return { ...publicOption(o), booking: b ? { id: b.id, name: b.name, email: b.email, phone: b.phone, createdAt: b.created_at } : null };
+                }),
+            },
+        };
+    }
+    // Côté candidat : uniquement les créneaux libres et à venir, sans aucune trace des réservations.
+    const today = parisToday();
+    return {
+        team,
+        poll: { ...base, options: closed ? [] : options.filter(o => !byOption[o.id] && o.day >= today).map(publicOption) },
+    };
+}
+
+async function getInterview(env, pollId) {
+    const poll = await getPollRow(env, pollId);
+    if (poll.mode !== 'entretien') throw new HttpError(400, 'Cette action est réservée aux sondages « Entretien candidat ».');
+    return poll;
+}
+
+async function createBooking(request, env, ctx, pollId, team) {
+    const poll = await getInterview(env, pollId);
+    if (isClosed(poll)) throw new HttpError(409, 'Plus de créneaux disponibles. Contactez le cabinet.');
+    const b = await readJson(request);
+    const name = text(b.name, 100);
+    const email = text(b.email, 200);
+    const phone = text(b.phone, 40);
+    if (!name) throw new HttpError(400, 'Indiquez votre nom et votre prénom.');
+    if (!EMAIL_RE.test(email)) throw new HttpError(400, 'Indiquez une adresse email valide.');
+    if (!PHONE_RE.test(phone) || (phone.match(/\d/g) || []).length < 6) throw new HttpError(400, 'Indiquez un numéro de téléphone valide.');
+
+    const option = await env.SURVEY_DB.prepare('SELECT * FROM poll_options WHERE id = ? AND poll_id = ?').bind(String(b.optionId || ''), pollId).first();
+    if (!option || option.day < parisToday()) throw new HttpError(409, 'Ce créneau n’est plus disponible. Choisissez-en un autre.');
+
+    const already = await env.SURVEY_DB.prepare('SELECT id FROM poll_responses WHERE poll_id = ? AND option_id IS NOT NULL AND lower(email) = lower(?)').bind(pollId, email).first();
+    if (already) throw new HttpError(409, 'Vous avez déjà réservé un créneau pour cet entretien. Pour le modifier, contactez le cabinet.');
+
+    const id = randomId(12);
+    const now = new Date().toISOString();
+    try {
+        await env.SURVEY_DB.batch([
+            env.SURVEY_DB.prepare('INSERT INTO poll_responses (id, poll_id, name, votes, email, phone, option_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)')
+                .bind(id, pollId, name, JSON.stringify({ [option.id]: 'y' }), email, phone, option.id, now, now),
+            touch(env, pollId, now),
+        ]);
+    } catch (err) {
+        if (/UNIQUE/i.test(String(err?.message || err))) throw new HttpError(409, 'Ce créneau vient d’être réservé par quelqu’un d’autre. Choisissez-en un autre.');
+        throw err;
+    }
+
+    const slot = publicOption(option);
+    const booking = { id, name, email, phone };
+    const calendar = interviewIcs(poll, slot, booking, 'PUBLISH');
+    const data = await loadInterview(env, { ...poll, last_action_at: now }, team);
+    const remaining = await countFree(env, pollId);
+    ctx.waitUntil(Promise.all([
+        sendInterviewMail(env, poll, booking, slot, 'confirm', calendar),
+        sendBookingToOrganizer(env, poll, booking, slot, remaining),
+    ]));
+    return json({ ...data, booking: { ...booking, option: slot }, ics: calendar }, 201);
+}
+
+async function releaseBooking(env, ctx, pollId, bookingId) {
+    const poll = await getInterview(env, pollId);
+    const row = await env.SURVEY_DB.prepare('SELECT * FROM poll_responses WHERE id = ? AND poll_id = ? AND option_id IS NOT NULL').bind(bookingId, pollId).first();
+    if (!row) throw new HttpError(404, 'Ce créneau a déjà été libéré.');
+    const option = await env.SURVEY_DB.prepare('SELECT * FROM poll_options WHERE id = ?').bind(row.option_id).first();
+    const now = new Date().toISOString();
+    await env.SURVEY_DB.batch([
+        env.SURVEY_DB.prepare('DELETE FROM poll_responses WHERE id = ?').bind(bookingId),
+        touch(env, pollId, now),
+    ]);
+    if (option) ctx.waitUntil(cancelMail(env, poll, row, publicOption(option)));
+    return json(await loadInterview(env, poll, true));
+}
+
+function readSlot(b) {
+    if (b.kind === 'day') {
+        if (!DAY_RE.test(b.day || '')) throw new HttpError(400, 'Date de créneau invalide.');
+        return { kind: 'day', day: b.day, start_min: null, end_min: null };
+    }
+    const start = Math.floor(Number(b.start)), end = Math.floor(Number(b.end));
+    if (!DAY_RE.test(b.day || '') || !(start >= 0 && end <= 1440 && end > start)) throw new HttpError(400, 'Horaires de créneau invalides : l’heure de fin doit suivre l’heure de début.');
+    return { kind: 'time', day: b.day, start_min: start, end_min: end };
+}
+
+async function assertNoDuplicate(env, pollId, slot, exceptId) {
+    const same = await env.SURVEY_DB.prepare(
+        'SELECT id FROM poll_options WHERE poll_id = ? AND kind = ? AND day = ? AND coalesce(start_min, -1) = ? AND coalesce(end_min, -1) = ? AND id != ?',
+    ).bind(pollId, slot.kind, slot.day, slot.start_min ?? -1, slot.end_min ?? -1, exceptId || '').first();
+    if (same) throw new HttpError(409, 'Ce créneau existe déjà.');
+}
+
+async function addOption(request, env, pollId) {
+    const poll = await getInterview(env, pollId);
+    const slot = readSlot(await readJson(request));
+    await assertNoDuplicate(env, pollId, slot);
+    const count = await env.SURVEY_DB.prepare('SELECT COUNT(*) AS n, coalesce(MAX(position), -1) AS last FROM poll_options WHERE poll_id = ?').bind(pollId).first();
+    if (count.n >= 80) throw new HttpError(400, 'Un sondage est limité à 80 créneaux.');
+    const now = new Date().toISOString();
+    await env.SURVEY_DB.batch([
+        env.SURVEY_DB.prepare('INSERT INTO poll_options (id, poll_id, position, kind, day, start_min, end_min, label) VALUES (?, ?, ?, ?, ?, ?, ?, NULL)')
+            .bind(randomId(12), pollId, count.last + 1, slot.kind, slot.day, slot.start_min, slot.end_min),
+        touch(env, pollId, now),
+    ]);
+    return json(await loadInterview(env, poll, true), 201);
+}
+
+async function updateOption(request, env, ctx, pollId, optionId) {
+    const poll = await getInterview(env, pollId);
+    const current = await env.SURVEY_DB.prepare('SELECT * FROM poll_options WHERE id = ? AND poll_id = ?').bind(optionId, pollId).first();
+    if (!current) throw new HttpError(404, 'Ce créneau a été supprimé entre-temps.');
+    const slot = readSlot(await readJson(request));
+    await assertNoDuplicate(env, pollId, slot, optionId);
+    const now = new Date().toISOString();
+    await env.SURVEY_DB.batch([
+        env.SURVEY_DB.prepare('UPDATE poll_options SET kind = ?, day = ?, start_min = ?, end_min = ? WHERE id = ?').bind(slot.kind, slot.day, slot.start_min, slot.end_min, optionId),
+        touch(env, pollId, now),
+    ]);
+    const changed = slot.kind !== current.kind || slot.day !== current.day || slot.start_min !== current.start_min || slot.end_min !== current.end_min;
+    const booking = await env.SURVEY_DB.prepare('SELECT * FROM poll_responses WHERE option_id = ?').bind(optionId).first();
+    if (booking && changed) {
+        const next = publicOption({ ...current, ...slot });
+        ctx.waitUntil(sendInterviewMail(env, poll, booking, next, 'moved', interviewIcs(poll, next, booking, 'PUBLISH'), publicOption(current)));
+    }
+    return json(await loadInterview(env, poll, true));
+}
+
+async function removeOption(env, ctx, pollId, optionId) {
+    const poll = await getInterview(env, pollId);
+    const option = await env.SURVEY_DB.prepare('SELECT * FROM poll_options WHERE id = ? AND poll_id = ?').bind(optionId, pollId).first();
+    if (!option) throw new HttpError(404, 'Ce créneau a déjà été supprimé.');
+    const booking = await env.SURVEY_DB.prepare('SELECT * FROM poll_responses WHERE option_id = ?').bind(optionId).first();
+    const now = new Date().toISOString();
+    await env.SURVEY_DB.batch([
+        env.SURVEY_DB.prepare('DELETE FROM poll_responses WHERE option_id = ?').bind(optionId),
+        env.SURVEY_DB.prepare('DELETE FROM poll_options WHERE id = ?').bind(optionId),
+        touch(env, pollId, now),
+    ]);
+    if (booking) ctx.waitUntil(cancelMail(env, poll, booking, publicOption(option)));
+    return json(await loadInterview(env, poll, true));
+}
+
+async function countFree(env, pollId) {
+    const row = await env.SURVEY_DB.prepare(`
+        SELECT COUNT(*) AS total,
+            SUM(CASE WHEN EXISTS (SELECT 1 FROM poll_responses r WHERE r.option_id = o.id) THEN 0 ELSE 1 END) AS free
+        FROM poll_options o WHERE o.poll_id = ?`).bind(pollId).first();
+    return { total: row.total, free: row.free || 0 };
+}
+
+function slotLong(o) {
+    const [y, m, d] = o.day.split('-').map(Number);
+    const date = new Date(Date.UTC(y, m - 1, d));
+    const head = `${DAYS_LONG[date.getUTCDay()]} ${d} ${MONTHS_LONG[m - 1]} ${y}`;
+    return o.kind === 'day' ? `${head}, journée entière` : `${head}, ${hour(o.start)} – ${hour(o.end)}`;
+}
+
+function durationText(o) {
+    if (o.kind === 'day') return 'Journée entière';
+    const len = o.end - o.start;
+    const h = Math.floor(len / 60), m = len % 60;
+    return h ? `${h} h${m ? ' ' + String(m).padStart(2, '0') : ''}` : `${m} min`;
+}
+
+/* Fichier calendrier (.ics), heures de Paris. */
+
+const PARIS_TZ = [
+    'BEGIN:VTIMEZONE', 'TZID:Europe/Paris',
+    'BEGIN:DAYLIGHT', 'TZOFFSETFROM:+0100', 'TZOFFSETTO:+0200', 'TZNAME:CEST', 'DTSTART:19700329T020000', 'RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU', 'END:DAYLIGHT',
+    'BEGIN:STANDARD', 'TZOFFSETFROM:+0200', 'TZOFFSETTO:+0100', 'TZNAME:CET', 'DTSTART:19701025T030000', 'RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU', 'END:STANDARD',
+    'END:VTIMEZONE',
+];
+
+function icsText(value) {
+    return String(value || '').replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\n/g, '\\n');
+}
+
+function icsFold(line) {
+    const out = [];
+    let rest = line;
+    while (rest.length > 73) {
+        out.push(rest.slice(0, 73));
+        rest = ' ' + rest.slice(73);
+    }
+    out.push(rest);
+    return out.join('\r\n');
+}
+
+// overrides : { uid, summary, description } pour la version destinée à l'organisateur.
+function interviewIcs(poll, slot, booking, method, overrides = {}) {
+    const compact = slot.day.replace(/-/g, '');
+    const hm = min => String(Math.floor(min / 60)).padStart(2, '0') + String(min % 60).padStart(2, '0') + '00';
+    const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+    let when;
+    if (slot.kind === 'day') {
+        const [y, m, d] = slot.day.split('-').map(Number);
+        const next = new Date(Date.UTC(y, m - 1, d + 1)).toISOString().slice(0, 10).replace(/-/g, '');
+        when = [`DTSTART;VALUE=DATE:${compact}`, `DTEND;VALUE=DATE:${next}`];
+    } else {
+        when = [`DTSTART;TZID=Europe/Paris:${compact}T${hm(slot.start)}`, `DTEND;TZID=Europe/Paris:${compact}T${hm(slot.end)}`];
+    }
+    const cancel = method === 'CANCEL';
+    const lines = [
+        'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Immer Executive//Sondages//FR', 'CALSCALE:GREGORIAN', `METHOD:${method}`,
+        ...(slot.kind === 'day' ? [] : PARIS_TZ),
+        'BEGIN:VEVENT',
+        `UID:${overrides.uid || booking.id}@survey.immer-executive.com`,
+        `SEQUENCE:${Math.floor(Date.now() / 1000) - 1700000000}`,
+        `DTSTAMP:${stamp}`,
+        ...when,
+        `SUMMARY:${icsText(overrides.summary || poll.title)}`,
+        ...(poll.place ? [`LOCATION:${icsText(poll.place)}`] : []),
+        ...((overrides.description ?? poll.description) ? [`DESCRIPTION:${icsText(overrides.description ?? poll.description)}`] : []),
+        `ORGANIZER;CN=${icsText(poll.organizer_name + ', Immer Executive')}:mailto:${poll.organizer_email}`,
+        `STATUS:${cancel ? 'CANCELLED' : 'CONFIRMED'}`,
+        'END:VEVENT', 'END:VCALENDAR',
+    ];
+    return lines.map(icsFold).join('\r\n') + '\r\n';
+}
+
+function toBase64(value) {
+    const bytes = new TextEncoder().encode(value);
+    let bin = '';
+    for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+    return btoa(bin);
+}
+
+/* Emails liés aux entretiens. */
+
+function mailLayout({ label, title, subtitle, body, button }) {
+    return `
+<div style="font-family:Lato,Helvetica,Arial,sans-serif;color:#0F1A2E;max-width:560px;line-height:1.6">
+  <p style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#5F6573;font-weight:bold;margin:0 0 8px">${esc(label)}</p>
+  <h1 style="font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;color:#1A3870;font-size:26px;line-height:1.2;margin:0">${esc(title)}</h1>
+  ${subtitle ? `<p style="margin:6px 0 0;color:#5F6573">${esc(subtitle)}</p>` : ''}
+  <div style="width:32px;border-top:1px solid #1A3870;margin:16px 0"></div>
+  ${body}
+  ${button ? `<p style="margin:8px 0 28px"><a href="${button.href}" style="display:inline-block;background:#1A3870;color:#fff;text-decoration:none;padding:10px 18px;border-radius:2px">${esc(button.label)}</a></p>` : '<div style="height:12px"></div>'}
+  <p style="font-size:10px;letter-spacing:.12em;color:#5F6573;border-top:1px solid #D9E3EF;padding-top:12px;margin:0">IMMER EXECUTIVE · 66 AVENUE DES CHAMPS-ÉLYSÉES · 75008 PARIS · IMMER-EXECUTIVE.COM</p>
+</div>`;
+}
+
+function mailRows(rows) {
+    return `<table style="border-collapse:collapse;margin:0 0 16px;font-size:14px">${rows.map(([k, v]) => `<tr><td style="padding:3px 16px 3px 0;color:#5F6573;vertical-align:top">${esc(k)}</td><td style="padding:3px 0">${v}</td></tr>`).join('')}</table>`;
+}
+
+function paragraphs(value) {
+    return String(value || '').split(/\n{2,}/).map(p => `<p style="margin:0 0 12px">${esc(p).replace(/\n/g, '<br>')}</p>`).join('');
+}
+
+async function sendMail(env, message) {
+    if (!env.RESEND_API_KEY) {
+        console.error('RESEND_API_KEY absente : email non envoyé.');
+        return;
+    }
+    try {
+        const res = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ from: MAIL_FROM, ...message }),
+        });
+        if (!res.ok) console.error('Erreur Resend (entretien)', res.status, await res.text());
+    } catch (err) {
+        console.error('Envoi impossible (entretien)', err);
+    }
+}
+
+function sendBookingToOrganizer(env, poll, booking, slot, remaining) {
+    const link = `https://survey.immer-executive.com/s/${poll.id}`;
+    const status = `${remaining.free} créneau${remaining.free > 1 ? 'x' : ''} encore libre${remaining.free > 1 ? 's' : ''} sur ${remaining.total}.`;
+    const rows = [['Créneau', `<b>${esc(slotLong(slot))}</b>`], ['Email', esc(booking.email)], ['Téléphone', esc(booking.phone)]];
+    // Événement d'agenda de l'organisateur : « Titre du sondage // Nom du candidat », lieu et horaire.
+    const summary = `${poll.title} // ${booking.name}`;
+    const calendar = interviewIcs(poll, slot, booking, 'PUBLISH', {
+        uid: `org-${booking.id}`,
+        summary,
+        description: `Candidat : ${booking.name}\nEmail : ${booking.email}\nTéléphone : ${booking.phone}`,
+    });
+    const filename = `${summary.replace(/[\\/:*?"<>|]+/g, '-').replace(/\s+/g, ' ').replace(/-+/g, '-').trim().slice(0, 120)}.ics`;
+    return sendMail(env, {
+        attachments: [{ filename, content: toBase64(calendar), content_type: 'text/calendar; charset=utf-8; method=PUBLISH' }],
+        to: poll.organizer_email,
+        reply_to: booking.email,
+        subject: `Créneau réservé · ${poll.title}`,
+        text: [`${booking.name} a réservé un créneau.`, '', `Créneau : ${slotLong(slot)}`, `Email : ${booking.email}`, `Téléphone : ${booking.phone}`, '', status, '', link].join('\n'),
+        html: mailLayout({ label: 'Créneau réservé', title: `${booking.name} a réservé un créneau`, subtitle: poll.title, body: mailRows(rows) + `<p style="margin:0 0 12px">${esc(status)}</p>`, button: { href: link, label: 'Voir le sondage' } }),
+    });
+}
+
+function sendInterviewMail(env, poll, booking, slot, kind, calendar, previous) {
+    const rows = [['Date', `<b>${esc(slotLong(slot))}</b>`], ...(poll.place ? [['Lieu', esc(poll.place)]] : []), ['Durée', esc(durationText(slot))]];
+    const contact = `Pour toute modification, contactez ${poll.organizer_name}, Immer Executive, en répondant à cet email.`;
+    const moved = kind === 'moved';
+    const intro = moved
+        ? `Votre entretien initialement prévu le ${slotLong(previous)} a été déplacé. Voici le nouvel horaire :`
+        : 'Nous vous confirmons votre entretien :';
+    return sendMail(env, {
+        to: booking.email,
+        reply_to: poll.organizer_email,
+        subject: `${moved ? 'Nouvel horaire de votre entretien' : 'Confirmation de votre entretien'} · ${slotLong(slot)}`,
+        text: [`Bonjour ${booking.name},`, '', intro, '', `Date : ${slotLong(slot)}`, ...(poll.place ? [`Lieu : ${poll.place}`] : []), `Durée : ${durationText(slot)}`, '',
+            ...(poll.description ? [poll.description, ''] : []), 'Le fichier joint vous permet d’ajouter ce rendez-vous à votre agenda.', contact].join('\n'),
+        html: mailLayout({
+            label: moved ? 'Entretien déplacé' : 'Entretien confirmé',
+            title: poll.title,
+            body: `<p style="margin:0 0 12px">Bonjour ${esc(booking.name)},</p><p style="margin:0 0 12px">${esc(intro)}</p>${mailRows(rows)}${paragraphs(poll.description)}<p style="margin:0 0 12px">Le fichier joint vous permet d’ajouter ce rendez-vous à votre agenda. ${esc(contact)}</p>`,
+        }),
+        attachments: [{ filename: 'entretien.ics', content: toBase64(calendar), content_type: 'text/calendar; charset=utf-8; method=PUBLISH' }],
+    });
+}
+
+function cancelMail(env, poll, booking, slot) {
+    const contact = `Le cabinet reviendra vers vous. Pour toute question, contactez ${poll.organizer_name}, Immer Executive, en répondant à cet email.`;
+    return sendMail(env, {
+        to: booking.email,
+        reply_to: poll.organizer_email,
+        subject: `Annulation de votre entretien · ${slotLong(slot)}`,
+        text: [`Bonjour ${booking.name},`, '', `Votre entretien prévu le ${slotLong(slot)} est annulé.`, '', contact].join('\n'),
+        html: mailLayout({
+            label: 'Entretien annulé',
+            title: poll.title,
+            body: `<p style="margin:0 0 12px">Bonjour ${esc(booking.name)},</p><p style="margin:0 0 12px">Votre entretien prévu le <b>${esc(slotLong(slot))}</b> est annulé.</p><p style="margin:0 0 12px">${esc(contact)}</p>`,
+        }),
+        attachments: [{ filename: 'annulation.ics', content: toBase64(interviewIcs(poll, slot, booking, 'CANCEL')), content_type: 'text/calendar; charset=utf-8; method=CANCEL' }],
+    });
+}
+
 /* ---------------------------------------------------------------- Outils */
 
 const DAYS = ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'];
@@ -449,6 +847,20 @@ function commonDuration(options) {
     if (lengths.size !== 1 || options.some(o => o.kind === 'day')) return null;
     const [len] = lengths;
     return len;
+}
+
+function publicType(row) {
+    return row.mode === 'entretien' ? 'entretien' : row.type;
+}
+
+function isClosed(row) {
+    return !!(row.closed_option || row.closed_at);
+}
+
+// Texte sur plusieurs lignes : espaces normalisés, sauts de ligne conservés (deux au plus).
+function multiline(value, max) {
+    return String(value ?? '').replace(/\r\n?/g, '\n').split('\n').map(l => l.replace(/[ \t]+/g, ' ').trim())
+        .join('\n').replace(/\n{3,}/g, '\n\n').trim().slice(0, max);
 }
 
 function expired(poll) {

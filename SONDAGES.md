@@ -13,6 +13,12 @@ transmet un lien unique aux participants, et chacun indique ses réponses.
   la réponse « si nécessaire » est désactivée.
 - Email à l'organisateur à chaque réponse, modification ou suppression (Resend, `RESEND_API_KEY`).
 - Clôture par un membre de l'équipe, sans email ; le sondage peut être rouvert.
+- **Entretien candidat** (troisième type) : l'équipe propose des créneaux, chaque candidat
+  (nom, email, téléphone) en réserve un seul. Les candidats ne voient que les créneaux libres,
+  jamais les autres candidats. Le candidat reçoit une confirmation avec fichier calendrier (.ics)
+  et l'organisateur un email par réservation, avec un fichier calendrier « Titre // Candidat »
+  (réponse directe possible : `reply_to`). L'équipe peut
+  libérer, modifier, supprimer ou ajouter un créneau ; le candidat concerné est prévenu par email.
 - Suppression automatique après 60 jours sans action (tâche planifiée quotidienne et contrôle
   à l'ouverture de la liste).
 
@@ -22,7 +28,7 @@ transmet un lien unique aux participants, et chacun indique ses réponses.
 | --- | --- |
 | Application React | `survey/index.html`, `src/survey/` |
 | API et routage par sous-domaine | `worker/survey.js` (appelé depuis `worker/index.js`) |
-| Base Cloudflare D1 | `migrations/0001_sondages.sql`, liaison `SURVEY_DB` dans `wrangler.toml` |
+| Base Cloudflare D1 | `migrations/`, liaison `SURVEY_DB` dans `wrangler.toml` |
 
 Le Worker reconnaît le sous-domaine `survey.` : il y sert l'API (`/api/...`) et l'application.
 Sur le site principal, `/survey` redirige vers le sous-domaine.
@@ -40,6 +46,15 @@ Puis, dans le tableau de bord Cloudflare : Workers › immer-executive-site › 
 Domains & Routes › Add › Custom domain › `survey.immer-executive.com`.
 
 `RESEND_API_KEY` est déjà utilisé par le formulaire de contact : rien à ajouter.
+
+## Évolutions de la base
+
+Chaque nouvelle migration de `migrations/` doit être appliquée à la base de production **avant**
+la fusion qui déploie le code correspondant :
+
+```bash
+npx wrangler d1 migrations apply immer-survey --remote
+```
 
 ## Développement local
 
