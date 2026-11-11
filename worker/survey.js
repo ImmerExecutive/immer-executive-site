@@ -679,7 +679,8 @@ function icsFold(line) {
     return out.join('\r\n');
 }
 
-function interviewIcs(poll, slot, booking, method) {
+// overrides : { uid, summary, description } pour la version destinée à l'organisateur.
+function interviewIcs(poll, slot, booking, method, overrides = {}) {
     const compact = slot.day.replace(/-/g, '');
     const hm = min => String(Math.floor(min / 60)).padStart(2, '0') + String(min % 60).padStart(2, '0') + '00';
     const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
@@ -696,13 +697,13 @@ function interviewIcs(poll, slot, booking, method) {
         'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Immer Executive//Sondages//FR', 'CALSCALE:GREGORIAN', `METHOD:${method}`,
         ...(slot.kind === 'day' ? [] : PARIS_TZ),
         'BEGIN:VEVENT',
-        `UID:${booking.id}@survey.immer-executive.com`,
+        `UID:${overrides.uid || booking.id}@survey.immer-executive.com`,
         `SEQUENCE:${Math.floor(Date.now() / 1000) - 1700000000}`,
         `DTSTAMP:${stamp}`,
         ...when,
-        `SUMMARY:${icsText(poll.title)}`,
+        `SUMMARY:${icsText(overrides.summary || poll.title)}`,
         ...(poll.place ? [`LOCATION:${icsText(poll.place)}`] : []),
-        ...(poll.description ? [`DESCRIPTION:${icsText(poll.description)}`] : []),
+        ...((overrides.description ?? poll.description) ? [`DESCRIPTION:${icsText(overrides.description ?? poll.description)}`] : []),
         `ORGANIZER;CN=${icsText(poll.organizer_name + ', Immer Executive')}:mailto:${poll.organizer_email}`,
         `STATUS:${cancel ? 'CANCELLED' : 'CONFIRMED'}`,
         'END:VEVENT', 'END:VCALENDAR',
@@ -761,7 +762,16 @@ function sendBookingToOrganizer(env, poll, booking, slot, remaining) {
     const link = `https://survey.immer-executive.com/s/${poll.id}`;
     const status = `${remaining.free} créneau${remaining.free > 1 ? 'x' : ''} encore libre${remaining.free > 1 ? 's' : ''} sur ${remaining.total}.`;
     const rows = [['Créneau', `<b>${esc(slotLong(slot))}</b>`], ['Email', esc(booking.email)], ['Téléphone', esc(booking.phone)]];
+    // Événement d'agenda de l'organisateur : « Titre du sondage // Nom du candidat », lieu et horaire.
+    const summary = `${poll.title} // ${booking.name}`;
+    const calendar = interviewIcs(poll, slot, booking, 'PUBLISH', {
+        uid: `org-${booking.id}`,
+        summary,
+        description: `Candidat : ${booking.name}\nEmail : ${booking.email}\nTéléphone : ${booking.phone}`,
+    });
+    const filename = `${summary.replace(/[\\/:*?"<>|]+/g, '-').replace(/\s+/g, ' ').replace(/-+/g, '-').trim().slice(0, 120)}.ics`;
     return sendMail(env, {
+        attachments: [{ filename, content: toBase64(calendar), content_type: 'text/calendar; charset=utf-8; method=PUBLISH' }],
         to: poll.organizer_email,
         reply_to: booking.email,
         subject: `Créneau réservé · ${poll.title}`,

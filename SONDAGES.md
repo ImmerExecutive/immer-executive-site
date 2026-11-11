@@ -16,7 +16,8 @@ transmet un lien unique aux participants, et chacun indique ses réponses.
 - **Entretien candidat** (troisième type) : l'équipe propose des créneaux, chaque candidat
   (nom, email, téléphone) en réserve un seul. Les candidats ne voient que les créneaux libres,
   jamais les autres candidats. Le candidat reçoit une confirmation avec fichier calendrier (.ics)
-  et l'organisateur un email par réservation (réponse directe possible : `reply_to`). L'équipe peut
+  et l'organisateur un email par réservation, avec un fichier calendrier « Titre // Candidat »
+  (réponse directe possible : `reply_to`). L'équipe peut
   libérer, modifier, supprimer ou ajouter un créneau ; le candidat concerné est prévenu par email.
 - Suppression automatique après 60 jours sans action (tâche planifiée quotidienne et contrôle
   à l'ouverture de la liste).
