@@ -65,3 +65,20 @@ export function sinceLabel(iso) {
 export function pollUrl(id) {
     return `${window.location.origin}/s/${id}`;
 }
+
+export function dayLong(day) {
+    const d = parseDay(day);
+    return `${DAYS_LONG[d.getDay()]} ${d.getDate()} ${MONTHS_LONG[d.getMonth()]}`;
+}
+
+// « 09:30 » ↔ 570 minutes.
+export function toTimeInput(min) {
+    return `${String(Math.floor(min / 60)).padStart(2, '0')}:${String(min % 60).padStart(2, '0')}`;
+}
+
+export function fromTimeInput(value) {
+    const [h, m] = String(value || '').split(':').map(Number);
+    return Number.isFinite(h) && Number.isFinite(m) ? h * 60 + m : NaN;
+}
+
+export const TYPE_LABELS = { reunion: 'Réunion à planifier', choix: 'Choix à faire', entretien: 'Entretien candidat' };

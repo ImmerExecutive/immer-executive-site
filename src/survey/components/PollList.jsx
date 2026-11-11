@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api.js';
-import { daysSince, duration, optionShort, pollUrl, sinceLabel } from '../format.js';
+import { TYPE_LABELS, daysSince, duration, optionShort, pollUrl, sinceLabel } from '../format.js';
 import { copyText } from './copy.js';
 
 const FILTERS = [['all', 'Tous'], ['open', 'Ouverts'], ['closed', 'Clôturés']];
@@ -34,7 +34,8 @@ export default function PollList({ navigate, notify }) {
     };
 
     const retention = data?.retentionDays ?? 60;
-    const polls = (data?.polls || []).filter(p => filter === 'all' || (filter === 'open' ? !p.closedOption : !!p.closedOption));
+    const isClosed = p => !!(p.closedOption || p.closed);
+    const polls = (data?.polls || []).filter(p => filter === 'all' || (filter === 'open' ? !isClosed(p) : isClosed(p)));
 
     return (
         <>
@@ -79,18 +80,18 @@ export default function PollList({ navigate, notify }) {
                                             <td>
                                                 <a className="t-title" href={`/s/${p.id}`} onClick={go(`/s/${p.id}`)}>{p.title}</a>
                                                 <div className="t-meta">
-                                                    {p.type === 'reunion' ? 'Réunion' : 'Choix'}
+                                                    {p.type === 'reunion' ? 'Réunion' : TYPE_LABELS[p.type]}
                                                     {p.duration ? ` · ${duration(p.duration)}` : ''}
-                                                    {p.limit ? ` · ${p.limit} participant${p.limit > 1 ? 's' : ''} max. par ${p.type === 'reunion' ? 'créneau' : 'option'}` : ''}
+                                                    {p.limit && p.type !== 'entretien' ? ` · ${p.limit} participant${p.limit > 1 ? 's' : ''} max. par ${p.type === 'reunion' ? 'créneau' : 'option'}` : ''}
                                                 </div>
                                             </td>
                                             <td>{p.organizerName}</td>
-                                            <td className="num">{p.responseCount}</td>
+                                            <td className="num" style={{ whiteSpace: 'nowrap' }} title={p.type === 'entretien' ? 'Créneaux réservés / créneaux proposés' : undefined}>{p.type === 'entretien' ? `${p.responseCount} / ${p.optionCount}` : p.responseCount}</td>
                                             <td className="num">{sinceLabel(p.lastActionAt)}</td>
                                             <td className={`num ${left <= 10 ? 'soon' : ''}`}>{left === 0 ? 'aujourd’hui' : `dans ${left} j`}</td>
                                             <td>
-                                                {p.closedOption
-                                                    ? <><span className="pastille closed">Clôturé</span><div className="t-meta">{optionShort(p.closedOption)}</div></>
+                                                {isClosed(p)
+                                                    ? <><span className="pastille closed">Clôturé</span>{p.closedOption && <div className="t-meta">{optionShort(p.closedOption)}</div>}</>
                                                     : <span className="pastille">Ouvert</span>}
                                             </td>
                                             <td>
