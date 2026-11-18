@@ -6,16 +6,19 @@ export const DURATIONS = [
     { id: 60, label: '1 h' },
     { id: 90, label: '1 h 30' },
     { id: 120, label: '2 h' },
-    { id: 'am', label: 'Demi-journée (matin)' },
-    { id: 'pm', label: 'Demi-journée (après-midi)' },
+    { id: 240, label: '4 h' },
     { id: 'day', label: 'Journée' },
+    { id: 'custom', label: 'Définir' },
 ];
+
+// Durée libre (« Définir ») : en minutes, par pas de 5.
+const CUSTOM_MIN = 5;
+const CUSTOM_MAX = 720;
 
 const START = 8 * 60;
 const END = 20 * 60;
 const STEP = 30;
 const ROWS = (END - START) / STEP;
-const HALF_DAYS = { am: [9 * 60, 13 * 60], pm: [14 * 60, 18 * 60] };
 
 export function sameSlot(a, b) {
     return a.kind === b.kind && a.day === b.day && a.start === b.start && a.end === b.end;
@@ -31,6 +34,8 @@ export default function WeekCalendar({ slots, onChange }) {
     const today = dayKey(new Date());
     const [week, setWeek] = useState(thisWeek);
     const [dur, setDur] = useState(60);
+    const [custom, setCustom] = useState(45);
+    const customValid = Number.isInteger(custom) && custom >= CUSTOM_MIN && custom <= CUSTOM_MAX;
     const days = [0, 1, 2, 3, 4].map(i => addDays(week, i));
     const keys = days.map(dayKey);
 
@@ -42,8 +47,10 @@ export default function WeekCalendar({ slots, onChange }) {
 
     const clickCell = (day, minute) => {
         if (dur === 'day') return add({ kind: 'day', day });
-        if (HALF_DAYS[dur]) return add({ kind: 'time', day, start: HALF_DAYS[dur][0], end: HALF_DAYS[dur][1] });
-        add({ kind: 'time', day, start: minute, end: Math.min(END, minute + dur) });
+        const length = dur === 'custom' ? custom : dur;
+        if (dur === 'custom' && !customValid) return;
+        // Un créneau peut finir après 20 h (affiché jusqu'au bas de l'agenda), jamais après minuit.
+        add({ kind: 'time', day, start: minute, end: Math.min(24 * 60, minute + length) });
     };
 
     const last = days[4];
@@ -92,7 +99,15 @@ export default function WeekCalendar({ slots, onChange }) {
                 {DURATIONS.map(d => (
                     <button key={d.id} type="button" className="chip" aria-pressed={dur === d.id} onClick={() => setDur(d.id)}>{d.label}</button>
                 ))}
+                {dur === 'custom' && (
+                    <span className="custom-dur">
+                        <input type="number" min={CUSTOM_MIN} max={CUSTOM_MAX} step={5} value={Number.isNaN(custom) ? '' : custom} aria-label="Durée du créneau en minutes" autoFocus
+                            onChange={e => setCustom(e.target.value === '' ? NaN : Math.floor(Number(e.target.value)))} />
+                        <span className="hint">min</span>
+                    </span>
+                )}
             </div>
+            {dur === 'custom' && !customValid && <p className="error" style={{ marginTop: -6, marginBottom: 12 }}>Indiquez une durée entre {CUSTOM_MIN} et {CUSTOM_MAX} minutes.</p>}
             <div className="scroll">
                 <div className="cal" style={{ gridTemplateRows: `auto 34px repeat(${ROWS}, 22px)` }}>
                     <div style={{ gridColumn: 1, gridRow: 1 }} />
