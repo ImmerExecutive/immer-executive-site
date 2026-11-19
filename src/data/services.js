@@ -54,7 +54,8 @@ export const SERVICES_DATA = [
             { id: 'ia-data', label: 'IA / Data' },
             { id: 'analyse-donnees-digital', label: 'Analyse des données' },
             { id: 'automatisations', label: 'Automatisations' },
-            { id: 'optimisation-process', label: 'Optimisation des process' }
+            { id: 'optimisation-process', label: 'Optimisation des process' },
+            { id: 'financer-projet-ia', label: 'Financer votre projet IA' }
         ]
     }
 ];
@@ -215,6 +216,21 @@ export const FULL_SERVICES_CONTENT = {
                 situation: 'Les processus ont évolué par accumulation, sans vision d\'ensemble. Des frictions persistent, des étapes sont redondantes, et la coordination entre équipes génère des pertes de temps.',
                 intervention: 'Cartographie des processus existants, identification des frictions et des redondances, refonte et déploiement de processus optimisés en concertation avec les équipes.',
                 effet: 'Des processus fluides, compris et adoptés par les équipes. Une organisation plus agile et moins dépendante des silos.',
+                partnerContact: { name: 'Raphaël', email: 'raphael.besson@immer-executive.com' }
+            },
+            {
+                id: 'financer-projet-ia',
+                title: 'Financer votre projet IA',
+                iconName: 'Coins',
+                intro: 'Selon votre taille, votre région et la nature du projet, une partie de votre démarche IA peut être finançable. Nous vous aidons à identifier les dispositifs pertinents et à préparer votre dossier, de l\'audit à la formation de vos équipes.',
+                dispositifsTitle: 'Dispositifs que nous étudions avec vous, sous réserve d\'éligibilité',
+                dispositifs: [
+                    'Bpifrance : Diag Data IA, Accélérateur IA, Prêt Boost IA',
+                    'Aides régionales, par exemple Move2Digital en région Sud ou DIVA en Pays de la Loire',
+                    'Votre OPCO, pour la formation de vos collaborateurs',
+                    'Le crédit d\'impôt innovation, pour certains projets de développement'
+                ],
+                note: 'Les dispositifs évoluent régulièrement et leur obtention dépend de l\'organisme financeur. Nous vérifions avec vous les conditions à jour avant tout engagement.',
                 partnerContact: { name: 'Raphaël', email: 'raphael.besson@immer-executive.com' }
             }
         ]

@@ -47,21 +47,41 @@ export function ServiceDetailView({ serviceId, targetPrestation, fullServicesCon
                             </div>
 
                             <div className="lg:col-span-8 bg-white border border-gray-100 p-10 md:p-16 shadow-xl rounded-sm">
-                                <div className="grid md:grid-cols-2 gap-16 mb-16">
-                                    <div className="space-y-6">
-                                        <h4 className="text-[11px] uppercase tracking-[0.3em] font-black text-[#01001e]/40">La Situation</h4>
-                                        <p className="text-base text-gray-700 leading-relaxed font-medium">{p.situation}</p>
+                                {p.dispositifs ? (
+                                    <div className="mb-16 space-y-8">
+                                        <h4 className="text-[11px] uppercase tracking-[0.3em] font-black text-[#01001e]/40">{p.dispositifsTitle}</h4>
+                                        <ul className="space-y-5">
+                                            {p.dispositifs.map((d) => (
+                                                <li key={d} className="flex gap-4 text-base text-gray-700 leading-relaxed font-medium">
+                                                    <span className="mt-[0.6em] w-1.5 h-1.5 shrink-0 rounded-full bg-[#0000a3]" aria-hidden="true" />
+                                                    <span>{d}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
                                     </div>
-                                    <div className="space-y-6">
-                                        <h4 className="text-[11px] uppercase tracking-[0.3em] font-black text-[#01001e]/40">L'Intervention</h4>
-                                        <p className="text-base text-[#01001e]/80 leading-relaxed font-light">{p.intervention}</p>
+                                ) : (
+                                    <div className="grid md:grid-cols-2 gap-16 mb-16">
+                                        <div className="space-y-6">
+                                            <h4 className="text-[11px] uppercase tracking-[0.3em] font-black text-[#01001e]/40">La Situation</h4>
+                                            <p className="text-base text-gray-700 leading-relaxed font-medium">{p.situation}</p>
+                                        </div>
+                                        <div className="space-y-6">
+                                            <h4 className="text-[11px] uppercase tracking-[0.3em] font-black text-[#01001e]/40">L'Intervention</h4>
+                                            <p className="text-base text-[#01001e]/80 leading-relaxed font-light">{p.intervention}</p>
+                                        </div>
                                     </div>
-                                </div>
+                                )}
 
                                 <div className="pt-12 border-t border-gray-100">
                                     <div className="mb-10">
-                                        <h4 className="text-[11px] uppercase tracking-[0.3em] font-black text-[#0000a3] mb-4">L'Effet mesurable</h4>
-                                        <p className="text-lg italic text-[#01001e]/90 leading-relaxed font-light">{p.effet}</p>
+                                        {p.note ? (
+                                            <p className="text-base italic text-[#01001e]/70 leading-relaxed font-light">{p.note}</p>
+                                        ) : (
+                                            <>
+                                                <h4 className="text-[11px] uppercase tracking-[0.3em] font-black text-[#0000a3] mb-4">L'Effet mesurable</h4>
+                                                <p className="text-lg italic text-[#01001e]/90 leading-relaxed font-light">{p.effet}</p>
+                                            </>
+                                        )}
                                     </div>
 
                                     <div className="flex justify-end">
