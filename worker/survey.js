@@ -599,6 +599,8 @@ async function addOption(request, env, pollId) {
 }
 
 async function updateOption(request, env, ctx, pollId, optionId) {
+    const row = await getPollRow(env, pollId);
+    if (isMeeting(row)) return updateMeetingOption(request, env, row, optionId);
     const poll = await getInterview(env, pollId);
     const current = await env.SURVEY_DB.prepare('SELECT * FROM poll_options WHERE id = ? AND poll_id = ?').bind(optionId, pollId).first();
     if (!current) throw new HttpError(404, 'Ce créneau a été supprimé entre-temps.');
@@ -619,6 +621,8 @@ async function updateOption(request, env, ctx, pollId, optionId) {
 }
 
 async function removeOption(env, ctx, pollId, optionId) {
+    const row = await getPollRow(env, pollId);
+    if (isMeeting(row)) return removeMeetingOption(env, row, optionId);
     const poll = await getInterview(env, pollId);
     const option = await env.SURVEY_DB.prepare('SELECT * FROM poll_options WHERE id = ? AND poll_id = ?').bind(optionId, pollId).first();
     if (!option) throw new HttpError(404, 'Ce créneau a déjà été supprimé.');
@@ -631,6 +635,61 @@ async function removeOption(env, ctx, pollId, optionId) {
     ]);
     if (booking) ctx.waitUntil(cancelMail(env, poll, booking, publicOption(option)));
     return json(await loadInterview(env, poll, true));
+}
+
+/* Réunion à planifier : modification et suppression d'un créneau par l'équipe. */
+
+function isMeeting(row) {
+    return row.mode !== 'entretien' && row.type === 'reunion';
+}
+
+async function meetingOption(env, row, optionId) {
+    if (isClosed(row)) throw new HttpError(409, 'Ce sondage est clôturé : rouvrez-le pour modifier ses créneaux.');
+    const option = await env.SURVEY_DB.prepare('SELECT * FROM poll_options WHERE id = ? AND poll_id = ?').bind(optionId, row.id).first();
+    if (!option) throw new HttpError(404, 'Ce créneau a déjà été supprimé.');
+    return option;
+}
+
+// Retire un créneau des réponses enregistrées (votes JSON de chaque participant).
+async function clearVotes(env, pollId, optionId) {
+    const { results } = await env.SURVEY_DB.prepare('SELECT id, votes FROM poll_responses WHERE poll_id = ?').bind(pollId).all();
+    return results.flatMap(r => {
+        const votes = parseVotes(r.votes);
+        if (!(optionId in votes)) return [];
+        delete votes[optionId];
+        return [env.SURVEY_DB.prepare('UPDATE poll_responses SET votes = ? WHERE id = ?').bind(JSON.stringify(votes), r.id)];
+    });
+}
+
+async function updateMeetingOption(request, env, row, optionId) {
+    const current = await meetingOption(env, row, optionId);
+    const slot = readSlot(await readJson(request));
+    await assertNoDuplicate(env, row.id, slot, optionId);
+    const changed = slot.kind !== current.kind || slot.day !== current.day || slot.start_min !== current.start_min || slot.end_min !== current.end_min;
+    if (changed) {
+        // Les réponses données pour l'ancien horaire ne valent plus : elles sont effacées pour ce créneau.
+        await env.SURVEY_DB.batch([
+            env.SURVEY_DB.prepare('UPDATE poll_options SET kind = ?, day = ?, start_min = ?, end_min = ? WHERE id = ?').bind(slot.kind, slot.day, slot.start_min, slot.end_min, optionId),
+            ...(await clearVotes(env, row.id, optionId)),
+            touch(env, row.id, new Date().toISOString()),
+        ]);
+        // Garde les colonnes dans l'ordre chronologique.
+        const { results } = await env.SURVEY_DB.prepare('SELECT * FROM poll_options WHERE poll_id = ?').bind(row.id).all();
+        await env.SURVEY_DB.batch(sortSlots(results).map((o, i) => env.SURVEY_DB.prepare('UPDATE poll_options SET position = ? WHERE id = ?').bind(i, o.id)));
+    }
+    return json(await loadPoll(env, row.id, true));
+}
+
+async function removeMeetingOption(env, row, optionId) {
+    await meetingOption(env, row, optionId);
+    const count = await env.SURVEY_DB.prepare('SELECT COUNT(*) AS n FROM poll_options WHERE poll_id = ?').bind(row.id).first();
+    if (count.n <= 1) throw new HttpError(409, 'Un sondage doit garder au moins un créneau.');
+    await env.SURVEY_DB.batch([
+        env.SURVEY_DB.prepare('DELETE FROM poll_options WHERE id = ?').bind(optionId),
+        ...(await clearVotes(env, row.id, optionId)),
+        touch(env, row.id, new Date().toISOString()),
+    ]);
+    return json(await loadPoll(env, row.id, true));
 }
 
 async function countFree(env, pollId) {
