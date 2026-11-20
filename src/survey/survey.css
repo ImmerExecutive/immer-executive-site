@@ -238,3 +238,8 @@ table.slots .free { color: var(--muted); }
 /* Durée libre du créneau (« Définir ») */
 .custom-dur { display: inline-flex; align-items: center; gap: 6px; }
 .custom-dur input[type=number] { width: 76px; padding: 4px 8px; font-size: 13px; border: 0.5px solid var(--brand); border-radius: 2px; background: var(--bg); }
+
+/* Réunion à planifier : actions de l'équipe sous chaque créneau */
+.slot-acts { display: flex; gap: 10px; justify-content: center; margin-top: 6px; }
+.slot-acts .link { font-size: 12px; }
+.slot-panel { border-left-color: var(--brand); }

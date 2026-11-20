@@ -183,7 +183,7 @@ function Confirmation({ poll, done }) {
 
 /* ------------------------------------------------------------ Équipe */
 
-function SlotEditor({ initial, onSave, onCancel, booked, busy }) {
+export function SlotEditor({ initial, onSave, onCancel, booked, note, busy }) {
     const [day, setDay] = useState(initial.day || dayKey(new Date()));
     const [allDay, setAllDay] = useState(initial.kind === 'day');
     const [start, setStart] = useState(toTimeInput(initial.start ?? 600));
@@ -205,6 +205,7 @@ function SlotEditor({ initial, onSave, onCancel, booked, busy }) {
             )}
             <button type="button" className="btn small" onClick={save} disabled={busy}>Enregistrer</button>
             <button type="button" className="link" onClick={onCancel}>Annuler</button>
+            {note && <span className="hint" style={{ flexBasis: '100%' }}>{note}</span>}
             {booked && <span className="hint" style={{ flexBasis: '100%' }}>{booked} a réservé ce créneau : la réservation suit le nouvel horaire et le candidat reçoit un email avec le nouvel horaire.</span>}
         </div>
     );

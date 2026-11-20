@@ -2,7 +2,7 @@ import { Fragment, useEffect, useState } from 'react';
 import { api } from '../api.js';
 import { DAYS, MONTHS, duration, optionLong, optionShort, parseDay, pollUrl, slotRange } from '../format.js';
 import { copyText } from './copy.js';
-import InterviewPage from './InterviewPage.jsx';
+import InterviewPage, { SlotEditor } from './InterviewPage.jsx';
 
 const LABELS = { y: 'Oui', m: 'Si nécessaire', n: 'Non' };
 const GLYPHS = { y: '✓', m: '(✓)', n: '' };
@@ -45,6 +45,9 @@ export default function PollPage({ id, team, navigate, notify }) {
     const [busy, setBusy] = useState(false);
     const [picking, setPicking] = useState(false);
     const [confirmRow, setConfirmRow] = useState(null);
+    const [slotAction, setSlotAction] = useState(null); // { id, action: 'edit' | 'delete' } : créneau modifié ou supprimé par l'équipe
+    const [slotBusy, setSlotBusy] = useState(false);
+    const [slotError, setSlotError] = useState('');
 
     useEffect(() => {
         api.getPoll(id)
@@ -148,6 +151,30 @@ export default function PollPage({ id, team, navigate, notify }) {
         }
     };
 
+    // Réunion à planifier : l'équipe peut modifier ou supprimer un créneau tant que le sondage est ouvert.
+    const canEditSlots = team && !closed && poll.type === 'reunion';
+    const openSlot = (option, action) => {
+        setSlotError('');
+        setPicking(false);
+        setSlotAction({ id: option.id, action });
+    };
+    const slotTarget = slotAction && options.find(o => o.id === slotAction.id);
+    const slotVotes = slotTarget ? poll.responses.filter(r => r.votes[slotTarget.id]).length : 0;
+    const runSlot = async (action, message) => {
+        setSlotBusy(true);
+        setSlotError('');
+        try {
+            const { poll: p } = await action();
+            setPoll(p);
+            setSlotAction(null);
+            notify(message);
+        } catch (err) {
+            setSlotError(err.message);
+        } finally {
+            setSlotBusy(false);
+        }
+    };
+
     const editRow = (
         <>
             <tr className="editing">
@@ -221,7 +248,17 @@ export default function PollPage({ id, team, navigate, notify }) {
                     <thead>
                         <tr>
                             <th className="name"><span className="libelle">{poll.responses.length} participant{poll.responses.length > 1 ? 's' : ''}</span></th>
-                            {options.map((o, i) => <th key={o.id} className={colClass(i)}><ColumnHead poll={poll} option={o} full={isFull(i)} /></th>)}
+                            {options.map((o, i) => (
+                                <th key={o.id} className={colClass(i)}>
+                                    <ColumnHead poll={poll} option={o} full={isFull(i)} />
+                                    {canEditSlots && (
+                                        <div className="slot-acts">
+                                            <button type="button" className="link" aria-label={`Modifier le créneau ${optionShort(o)}`} onClick={() => openSlot(o, 'edit')}>Modifier</button>
+                                            <button type="button" className="link warn" aria-label={`Supprimer le créneau ${optionShort(o)}`} onClick={() => openSlot(o, 'delete')}>Supprimer</button>
+                                        </div>
+                                    )}
+                                </th>
+                            ))}
                         </tr>
                     </thead>
                     <tbody>
@@ -278,6 +315,28 @@ export default function PollPage({ id, team, navigate, notify }) {
                 {poll.limit && <span><span className="mark blocked">·</span>Complet : le « oui » n’est plus possible</span>}
                 {!closed && top > 0 && <span className="ivory">Fond ivoire : le plus de disponibilités</span>}
             </div>
+
+            {canEditSlots && slotTarget && (
+                <div className="close-pick slot-panel">
+                    {slotAction.action === 'edit' ? (
+                        <>
+                            <p><b>Modifier le créneau</b> {optionShort(slotTarget)}</p>
+                            <SlotEditor key={slotTarget.id} initial={slotTarget} busy={slotBusy} onCancel={() => setSlotAction(null)}
+                                note={slotVotes ? `${slotVotes} réponse${slotVotes > 1 ? 's' : ''} déjà donnée${slotVotes > 1 ? 's' : ''} pour ce créneau ser${slotVotes > 1 ? 'ont effacées' : 'a effacée'} si l’horaire change : les participants devront répondre à nouveau pour ce créneau.` : null}
+                                onSave={slot => runSlot(() => api.updateSlot(poll.id, slotTarget.id, slot), 'Créneau modifié')} />
+                        </>
+                    ) : (
+                        <>
+                            <p><b>Supprimer le créneau</b> {optionShort(slotTarget)} ?{slotVotes ? ` Les ${slotVotes} réponse${slotVotes > 1 ? 's' : ''} données pour ce créneau ser${slotVotes > 1 ? 'ont' : 'a'} effacée${slotVotes > 1 ? 's' : ''}.` : ''}</p>
+                            <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+                                <button type="button" className="btn danger small" disabled={slotBusy} onClick={() => runSlot(() => api.deleteSlot(poll.id, slotTarget.id), 'Créneau supprimé')}>Supprimer</button>
+                                <button type="button" className="link" onClick={() => setSlotAction(null)}>Annuler</button>
+                            </div>
+                        </>
+                    )}
+                    {slotError && <p className="error" role="alert">{slotError}</p>}
+                </div>
+            )}
 
             {team && !closed && (picking ? (
                 <div className="close-pick">
