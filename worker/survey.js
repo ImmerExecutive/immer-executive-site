@@ -70,6 +70,7 @@ async function handleApi(request, env, ctx, url) {
 
     if (!sub) {
         if (method === 'GET') return json(await loadPoll(env, pollId, team));
+        if (method === 'PATCH') return updateDescription(request, env, pollId, requireTeam(team));
         if (method === 'DELETE') {
             requireTeam(team);
             await getPollRow(env, pollId);
@@ -206,7 +207,8 @@ async function createPoll(request, env) {
     const type = b.type === 'choix' ? 'choix' : 'reunion';
     const title = text(b.title, 200);
     const place = type === 'reunion' ? text(b.place, 200) : '';
-    const description = interview ? multiline(b.description, 2000) : '';
+    // Description : facultative pour une réunion ou un entretien, absente pour un choix.
+    const description = type === 'reunion' ? multiline(b.description, 2000) : '';
     const organizerName = text(b.organizerName, 100);
     const organizerEmail = text(b.organizerEmail, 200);
     // Un entretien : un candidat par créneau, sans « si nécessaire ».
@@ -263,6 +265,15 @@ async function createPoll(request, env) {
     return json({ id }, 201);
 }
 
+// Modification de la description après lancement (équipe), pour une réunion ou un entretien.
+async function updateDescription(request, env, pollId) {
+    const row = await getPollRow(env, pollId);
+    if (row.type !== 'reunion') throw new HttpError(400, 'Ce type de sondage n’a pas de description.');
+    const description = multiline((await readJson(request)).description, 2000);
+    await env.SURVEY_DB.prepare('UPDATE polls SET description = ?, last_action_at = ? WHERE id = ?').bind(description, new Date().toISOString(), pollId).run();
+    return json(await loadPoll(env, pollId, true));
+}
+
 async function closePoll(request, env, pollId) {
     const row = await getPollRow(env, pollId);
     if (row.mode === 'entretien') {
@@ -311,6 +322,7 @@ async function loadPoll(env, id, team) {
             type: poll.type,
             title: poll.title,
             place: poll.place,
+            description: poll.description || '',
             organizerName: poll.organizer_name,
             ...(team ? { organizerEmail: poll.organizer_email } : {}),
             allowMaybe: !!poll.allow_maybe,

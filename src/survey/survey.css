@@ -243,3 +243,8 @@ table.slots .free { color: var(--muted); }
 .slot-acts { display: flex; gap: 10px; justify-content: center; margin-top: 6px; }
 .slot-acts .link { font-size: 12px; }
 .slot-panel { border-left-color: var(--brand); }
+
+/* Réunion à planifier : description et sa modification par l'équipe */
+.desc-block { display: grid; gap: 8px; justify-items: start; margin-bottom: 24px; }
+.desc-block .desc { margin-bottom: 0; }
+.desc-edit { display: grid; gap: 10px; max-width: 70ch; margin-bottom: 24px; }
