@@ -70,7 +70,7 @@ export default function CreatePoll({ from, navigate, notify }) {
                 type: f.type,
                 title: f.title,
                 place: f.place,
-                description: interview ? f.description : '',
+                description: usesSlots ? f.description : '',
                 organizerName: f.organizerName,
                 organizerEmail: f.organizerEmail.trim(),
                 allowMaybe: f.allowMaybe && !maybeLocked,
@@ -150,12 +150,14 @@ export default function CreatePoll({ from, navigate, notify }) {
                             <input id="f-place" type="text" maxLength={200} value={f.place} onChange={e => set({ place: e.target.value })} placeholder="66 avenue des Champs-Élysées, Paris 8e" />
                         </div>
                     )}
-                    {interview && (
+                    {usesSlots && (
                         <div className="field">
-                            <label htmlFor="f-desc">Description</label>
-                            <textarea id="f-desc" maxLength={2000} rows={5} value={f.description} onChange={e => set({ description: e.target.value })}
-                                placeholder="Personnes rencontrées, déroulé, consignes d’accueil…" />
-                            <span className="hint">Affichée aux candidats au-dessus des créneaux et reprise dans leur email de confirmation.</span>
+                            <label htmlFor="f-desc">Description <span className="hint" style={{ fontWeight: 400 }}>(facultative)</span></label>
+                            <textarea id="f-desc" maxLength={2000} rows={interview ? 5 : 4} value={f.description} onChange={e => set({ description: e.target.value })}
+                                placeholder={interview ? 'Personnes rencontrées, déroulé, consignes d’accueil…' : 'Ordre du jour, participants attendus, informations pratiques…'} />
+                            <span className="hint">{interview
+                                ? 'Affichée aux candidats au-dessus des créneaux et reprise dans leur email de confirmation.'
+                                : 'Affichée aux participants au-dessus du tableau. Modifiable après le lancement du sondage.'}</span>
                         </div>
                     )}
                     <div className="field">

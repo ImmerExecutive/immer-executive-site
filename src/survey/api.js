@@ -32,6 +32,7 @@ export const api = {
     listPolls: () => call('GET', '/polls'),
     getPoll: id => call('GET', `/polls/${encodeURIComponent(id)}`),
     createPoll: poll => call('POST', '/polls', poll),
+    updateDescription: (id, description) => call('PATCH', `/polls/${encodeURIComponent(id)}`, { description }),
     deletePoll: id => call('DELETE', `/polls/${encodeURIComponent(id)}`),
     closePoll: (id, optionId) => call('POST', `/polls/${encodeURIComponent(id)}/close`, { optionId }),
     reopenPoll: id => call('POST', `/polls/${encodeURIComponent(id)}/reopen`),

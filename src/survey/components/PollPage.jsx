@@ -48,6 +48,9 @@ export default function PollPage({ id, team, navigate, notify }) {
     const [slotAction, setSlotAction] = useState(null); // { id, action: 'edit' | 'delete' } : créneau modifié ou supprimé par l'équipe
     const [slotBusy, setSlotBusy] = useState(false);
     const [slotError, setSlotError] = useState('');
+    const [descDraft, setDescDraft] = useState(null); // texte en cours de modification, ou null
+    const [descBusy, setDescBusy] = useState(false);
+    const [descError, setDescError] = useState('');
 
     useEffect(() => {
         api.getPoll(id)
@@ -175,6 +178,21 @@ export default function PollPage({ id, team, navigate, notify }) {
         }
     };
 
+    const saveDescription = async () => {
+        setDescBusy(true);
+        setDescError('');
+        try {
+            const { poll: p } = await api.updateDescription(poll.id, descDraft);
+            setPoll(p);
+            setDescDraft(null);
+            notify('Description enregistrée');
+        } catch (err) {
+            setDescError(err.message);
+        } finally {
+            setDescBusy(false);
+        }
+    };
+
     const editRow = (
         <>
             <tr className="editing">
@@ -227,6 +245,31 @@ export default function PollPage({ id, team, navigate, notify }) {
                     </div>
                 </div>
             </div>
+
+            {poll.type === 'reunion' && (descDraft !== null ? (
+                <div className="desc-edit">
+                    <label htmlFor="p-desc" className="libelle">Description</label>
+                    <textarea id="p-desc" maxLength={2000} rows={4} value={descDraft} autoFocus onChange={e => setDescDraft(e.target.value)}
+                        placeholder="Ordre du jour, participants attendus, informations pratiques…" />
+                    {descError && <p className="error" role="alert">{descError}</p>}
+                    <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+                        <button type="button" className="btn small" disabled={descBusy} onClick={saveDescription}>{descBusy ? 'Enregistrement…' : 'Enregistrer'}</button>
+                        <button type="button" className="link" onClick={() => setDescDraft(null)}>Annuler</button>
+                        <span className="hint">Laissez vide pour retirer la description.</span>
+                    </div>
+                </div>
+            ) : (
+                (poll.description || team) && (
+                    <div className="desc-block">
+                        {poll.description && <p className="desc">{poll.description}</p>}
+                        {team && (
+                            <button type="button" className="link" onClick={() => { setDescError(''); setDescDraft(poll.description || ''); }}>
+                                {poll.description ? 'Modifier la description' : 'Ajouter une description'}
+                            </button>
+                        )}
+                    </div>
+                )
+            ))}
 
             {closed ? (
                 <div className="banner">
